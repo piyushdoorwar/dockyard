@@ -12,7 +12,7 @@ export function InspectView({ info }: { info: ContainerInspect }) {
     <div className="space-y-6">
       <Toggle checked={raw} onChange={setRaw} label="Show raw JSON" />
       {raw ? (
-        <pre className="max-h-[60vh] overflow-auto rounded-lg border border-line bg-white p-4 text-12 leading-relaxed text-body">
+        <pre className="max-h-[60vh] overflow-auto rounded-lg border border-line bg-surface p-4 text-12 leading-relaxed text-body">
           {JSON.stringify(info, null, 2)}
         </pre>
       ) : (

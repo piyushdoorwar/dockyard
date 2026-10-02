@@ -16,7 +16,7 @@ function StatTile({ label, value, detail, to, icon: Icon }: { label: string; val
     <>
       <div className="flex items-center justify-between">
         <span className="text-13 text-grey">{label}</span>
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-accent">
           <Icon size={16} strokeWidth={2} aria-hidden />
         </span>
       </div>
@@ -24,7 +24,7 @@ function StatTile({ label, value, detail, to, icon: Icon }: { label: string; val
       {detail && <div className="mt-2 text-13 text-muted">{detail}</div>}
     </>
   );
-  const base = "rounded-lg border border-line bg-white p-5";
+  const base = "rounded-lg border border-line bg-surface p-5";
   return to ? (
     <Link to={to} className={clsx(base, "transition-colors hover:border-primary")}>
       {body}

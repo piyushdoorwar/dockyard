@@ -26,12 +26,12 @@ export function Modal({ title, subtitle, children, footer, onClose, width = 460 
   }, [onClose]);
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay/40 p-4" onMouseDown={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="flex max-h-[90vh] w-full flex-col rounded-lg bg-white shadow-xl"
+        className="flex max-h-[90vh] w-full flex-col rounded-lg bg-surface shadow-xl"
         style={{ maxWidth: width }}
         onMouseDown={(e) => e.stopPropagation()}
       >

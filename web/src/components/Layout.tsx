@@ -33,10 +33,10 @@ export function Layout() {
     <div className="flex h-screen overflow-hidden bg-canvas">
       <SideNav />
       <div className="flex min-w-0 grow flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-line bg-white px-4 sm:px-6 lg:px-10">
+        <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-line bg-surface px-4 sm:px-6 lg:px-10">
           <div className="flex min-w-0 items-center gap-2 text-13 text-grey">
             <span className="hidden font-medium text-ink sm:inline">Dockyard</span>
-            <span className="hidden text-[#b5c0b9] sm:inline" aria-hidden>
+            <span className="hidden text-muted sm:inline" aria-hidden>
               /
             </span>
             <span className="truncate">{sectionTitle(pathname)}</span>

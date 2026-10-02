@@ -9,7 +9,7 @@ const HISTORY = 60;
 
 function Tile({ label, value, detail, children }: { label: string; value: ReactNode; detail?: ReactNode; children?: ReactNode }) {
   return (
-    <div className="rounded-lg border border-line bg-white p-5">
+    <div className="rounded-lg border border-line bg-surface p-5">
       <div className="text-13 text-grey">{label}</div>
       <div className="mt-2 flex items-center gap-1.5 text-2xl font-medium text-ink">{value}</div>
       {detail && <div className="mt-1 flex items-center gap-1 text-13 text-muted">{detail}</div>}
@@ -49,7 +49,7 @@ export function StatsView({ containerId }: { containerId: string }) {
         label="Network I/O"
         value={
           <>
-            <ArrowDown size={18} className="text-primary" aria-label="received" />
+            <ArrowDown size={18} className="text-accent" aria-label="received" />
             {formatBytes(last.netRx)}
           </>
         }

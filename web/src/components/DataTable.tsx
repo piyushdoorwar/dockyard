@@ -78,7 +78,7 @@ export function DataTable<T>({ rows, rowKey, columns, loading, empty, defaultSor
                   {c.sortValue ? (
                     <button type="button" className="data-table-sort" data-active={active ? "" : undefined} onClick={() => cycle(c.key)}>
                       {c.header}
-                      <Icon size={12} className={active ? "text-primary" : "text-[#b3bdb7]"} aria-hidden />
+                      <Icon size={12} className={active ? "text-accent" : "text-muted"} aria-hidden />
                     </button>
                   ) : (
                     c.header
@@ -115,7 +115,7 @@ export function DataTable<T>({ rows, rowKey, columns, loading, empty, defaultSor
                           aria-expanded={open}
                           aria-label={expandLabel?.(row) ?? "Show details"}
                           onClick={() => toggle(key)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-grey hover:bg-primary-soft hover:text-primary"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-grey hover:bg-primary-soft hover:text-accent"
                         >
                           <ChevronRight size={15} className={open ? "rotate-90 transition-transform" : "transition-transform"} aria-hidden />
                         </button>

@@ -81,7 +81,7 @@ export function TerminalView({ containerId }: { containerId: string }) {
           </Button>
         )}
       </div>
-      <div ref={host} className="h-[60vh] overflow-hidden rounded-lg border border-[#1f2a24] bg-ink" />
+      <div ref={host} className="h-[60vh] overflow-hidden rounded-lg border border-line bg-terminal" />
     </div>
   );
 }

@@ -25,14 +25,14 @@ const TABS: Tab<TabId>[] = [
 
 function BackToContainers() {
   return (
-    <Link to="/containers" className="inline-flex items-center gap-1.5 text-13 text-primary hover:underline">
+    <Link to="/containers" className="inline-flex items-center gap-1.5 text-13 text-accent hover:underline">
       <ArrowLeft size={14} aria-hidden /> Containers
     </Link>
   );
 }
 
 function Idle({ children }: { children: string }) {
-  return <p className="rounded-lg border border-dashed border-line bg-white px-5 py-10 text-center text-13 text-muted">{children}</p>;
+  return <p className="rounded-lg border border-dashed border-line bg-surface px-5 py-10 text-center text-13 text-muted">{children}</p>;
 }
 
 export function portsFromInspect(info: ContainerInspect): PortMapping[] {

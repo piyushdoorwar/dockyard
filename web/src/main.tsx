@@ -8,6 +8,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App";
+import { applyTheme, readTheme } from "./lib/theme";
+
+// Apply the saved choice before mounting any runtime screens.
+applyTheme(readTheme());
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

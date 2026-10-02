@@ -20,7 +20,7 @@ export function PortLinks({ ports }: { ports: PortMapping[] }) {
           href={`http://localhost:${p.publicPort}`}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 font-mono text-12 whitespace-nowrap text-primary hover:underline"
+          className="inline-flex items-center gap-1 font-mono text-12 whitespace-nowrap text-accent hover:underline"
           title={`Host ${p.publicPort} to container ${p.privatePort}/${p.type}`}
         >
           {p.publicPort}:{p.privatePort}

@@ -40,13 +40,13 @@ export function Sparkline({ values, max, format, label, height = 48 }: Sparkline
         onMouseLeave={() => setHover(null)}
       >
         <line x1="0" x2={width} y1={height - 1} y2={height - 1} stroke="var(--color-line-soft)" strokeWidth="1" />
-        <polyline points={points} fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <polyline points={points} fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
         {hover !== null && (
           <line x1={hi * step} x2={hi * step} y1="0" y2={height} stroke="var(--color-line)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
         )}
       </svg>
       {hover !== null && (
-        <span className="pointer-events-none absolute -top-6 right-0 rounded bg-ink px-1.5 py-0.5 font-mono text-11 text-white">
+        <span className="pointer-events-none absolute -top-6 right-0 rounded bg-ink px-1.5 py-0.5 font-mono text-11 text-canvas">
           {format(values[hi])}
         </span>
       )}

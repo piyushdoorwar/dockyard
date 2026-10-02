@@ -52,10 +52,10 @@ export function IconButton({ icon: Icon, label, onClick, disabled, danger, disab
       className={clsx(
         "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors",
         disabled
-          ? "text-[#c4ccc7]"
+          ? "text-muted"
           : danger
             ? "text-danger hover:bg-danger-soft"
-            : "text-grey hover:bg-primary-soft hover:text-primary",
+            : "text-grey hover:bg-primary-soft hover:text-accent",
       )}
     >
       <Icon size={15} strokeWidth={2} aria-hidden />

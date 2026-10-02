@@ -19,7 +19,7 @@ with the Docker socket mounted and the current repository mounted read-only at
   lines. Work directly on `main` (trunk-based); don't create feature branches.
 - **Personal project.** Never mention work organisations or other projects in code,
   comments, fixtures, docs or commit messages.
-- **Light theme only: white surfaces, dark-green accent.** Colors are tokens in
+- **Runtime defaults to light, with an optional persisted dark theme; the site stays light.** Colors are tokens in
   [web/src/styles.css](web/src/styles.css) (`--color-primary: #0e7a43`). Green buttons
   carry white text. Don't hard-code other accent colors.
 
@@ -82,11 +82,11 @@ docker-entrypoint.sh    joins the Docker socket's group, then drops to the node 
   JetBrains Mono.
 - Shared classes: `.btn` + `.btn-primary | .btn-cancel | .btn-delete | .btn-danger-outline
   | .btn-ghost` (+ `.btn-sm`), `.input`, `.label`, `.check`, `.data-table`.
-- Sidebar: white panel, wordmark, nav items whose active state is solid green with white
+- Sidebar: themed surface, wordmark, nav items whose active state is solid green with white
   text; collapses to an icon rail below `md`.
 - Tables use `DataTable` (click-to-sort headers, optional expansion rows); give text
   columns a `minWidth` so narrow screens scroll instead of wrapping letter by letter.
-- Status pills use soft fills with dark text.
+- Status pills use soft fills with theme-aware contrasting text.
 
 ## Distribution
 

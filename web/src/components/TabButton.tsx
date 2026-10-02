@@ -10,7 +10,7 @@ export interface Tab<T extends string> {
 /** Segmented control: a bordered pill group with a solid green active item. */
 export function TabButton<T extends string>({ tabs, active, onChange }: { tabs: Tab<T>[]; active: T; onChange: (id: T) => void }) {
   return (
-    <div role="tablist" className="inline-flex max-w-full overflow-x-auto rounded-lg border border-line bg-white p-1">
+    <div role="tablist" className="inline-flex max-w-full overflow-x-auto rounded-lg border border-line bg-surface p-1">
       {tabs.map(({ id, label, icon: Icon }) => (
         <button
           key={id}

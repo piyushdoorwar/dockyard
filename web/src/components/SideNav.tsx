@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { Boxes, Container, Database, HardDrive, Layers, LayoutDashboard, type LucideIcon, Network } from "lucide-react";
 import { NavLink } from "react-router";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const NAV_ITEMS: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -14,7 +15,7 @@ export const NAV_ITEMS: { to: string; label: string; icon: LucideIcon; end?: boo
 
 export function SideNav() {
   return (
-    <aside className="flex h-full w-16 shrink-0 flex-col bg-white shadow-[1px_0_0_var(--color-line)] md:w-60">
+    <aside className="flex h-full w-16 shrink-0 flex-col bg-surface shadow-[1px_0_0_var(--color-line)] md:w-60">
       <div className="flex items-center justify-center gap-2.5 px-3 pt-5 pb-4 md:justify-start md:px-5">
         <Logo size={30} />
         <span className="hidden text-[19px] font-bold tracking-tight text-ink md:inline">Dockyard</span>
@@ -31,7 +32,7 @@ export function SideNav() {
                 className={({ isActive }) =>
                   clsx(
                     "flex h-10 items-center justify-center gap-3 rounded-md text-13 font-medium transition-colors md:justify-start md:px-3",
-                    isActive ? "is-active bg-primary text-white" : "text-grey hover:bg-primary-soft hover:text-primary",
+                    isActive ? "is-active bg-primary text-white" : "text-grey hover:bg-primary-soft hover:text-accent",
                   )
                 }
               >
@@ -42,8 +43,9 @@ export function SideNav() {
           ))}
         </ul>
       </nav>
+      <ThemeToggle />
       <div className="m-3 flex items-center justify-center gap-2.5 rounded-lg border border-line px-3 py-2.5 md:justify-start" title="Dockyard only answers requests from this machine">
-        <HardDrive size={15} className="shrink-0 text-primary" aria-hidden />
+        <HardDrive size={15} className="shrink-0 text-accent" aria-hidden />
         <div className="hidden min-w-0 md:block">
           <p className="text-12 font-medium text-ink">Local only</p>
           <p className="text-11 text-muted">Nothing leaves this machine</p>

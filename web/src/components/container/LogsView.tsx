@@ -78,7 +78,7 @@ export function LogsView({ containerId }: { containerId: string }) {
           const atEnd = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
           if (atEnd !== follow) setFollow(atEnd);
         }}
-        className="h-[60vh] overflow-auto rounded-lg border border-line bg-white p-4 font-mono text-12 leading-5"
+        className="h-[60vh] overflow-auto rounded-lg border border-line bg-surface p-4 font-mono text-12 leading-5"
       >
         {visible.length === 0 ? (
           <p className="text-muted italic">{query ? "No lines match." : "No logs yet."}</p>

@@ -40,17 +40,17 @@ export function ContainerName({ c }: { c: ContainerSummary }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="flex items-center gap-2">
-        <Link to={`/containers/${c.id}`} className="font-medium [overflow-wrap:anywhere] text-primary hover:underline">
+        <Link to={`/containers/${c.id}`} className="font-medium [overflow-wrap:anywhere] text-accent hover:underline">
           {c.name}
         </Link>
-        {c.isSelf && <span className="shrink-0 rounded whitespace-nowrap bg-primary-soft px-1.5 py-0.5 text-11 font-medium text-primary">this app</span>}
+        {c.isSelf && <span className="shrink-0 rounded whitespace-nowrap bg-primary-soft px-1.5 py-0.5 text-11 font-medium text-accent">this app</span>}
       </span>
       <span className="text-12 text-muted">
         <span className="font-mono">{c.shortId}</span>
         {c.project && (
           <>
             {" · "}
-            <Link to="/stacks" className="hover:text-primary">
+            <Link to="/stacks" className="hover:text-accent">
               {c.project}
             </Link>
           </>

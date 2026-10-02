@@ -11,7 +11,7 @@ function AgentDocument({ file }: { file: AgentFile }) {
   return (
     <article className="agent-document">
       <header className="flex items-center gap-3 border-b border-line-soft px-4 py-3.5 sm:px-5">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-accent">
           <FileText size={16} aria-hidden />
         </span>
         <div className="min-w-0">
@@ -32,12 +32,12 @@ function AgentDocument({ file }: { file: AgentFile }) {
             <section className="agent-section" key={`${section.title}-${index}`} style={{ "--depth": Math.max(0, section.level - 1) } as CSSProperties}>
               <div className="agent-section-marker" aria-hidden />
               <div className="min-w-0">
-                <span className="float-left mt-px mr-2 rounded bg-primary-tint px-1.5 py-0.5 font-mono text-[9px] font-semibold text-[#567564]">
+                <span className="float-left mt-px mr-2 rounded bg-primary-tint px-1.5 py-0.5 font-mono text-[9px] font-semibold text-grey">
                   {section.level ? `H${section.level}` : "TXT"}
                 </span>
                 <h3 className="text-13 font-medium text-ink">{section.title}</h3>
                 {section.body && (
-                  <pre className="mt-2 max-h-44 overflow-auto rounded-md border border-line-soft bg-[#f8faf8] px-3 py-2.5 text-[11.5px] leading-relaxed whitespace-pre-wrap text-[#445149]">
+                  <pre className="mt-2 max-h-44 overflow-auto rounded-md border border-line-soft bg-line-soft px-3 py-2.5 text-[11.5px] leading-relaxed whitespace-pre-wrap text-body">
                     {section.body}
                   </pre>
                 )}
@@ -52,7 +52,7 @@ function AgentDocument({ file }: { file: AgentFile }) {
 
 function Summary({ label, children, mono }: { label: string; children: React.ReactNode; mono?: boolean }) {
   return (
-    <div className="min-w-0 rounded-lg border border-line bg-white p-5">
+    <div className="min-w-0 rounded-lg border border-line bg-surface p-5">
       <p className="text-12 text-muted">{label}</p>
       <p className={mono ? "mt-2 truncate font-mono text-12 font-medium text-ink" : "mt-2 text-[22px] leading-none font-medium text-ink"}>{children}</p>
     </div>
@@ -96,8 +96,8 @@ export function AgentsPage() {
         </span>
       </div>
       {manifest.data && files.length === 0 ? (
-        <div className="grid justify-items-center gap-2 rounded-lg border border-dashed border-line bg-white p-12 text-center">
-          <Network size={24} className="text-[#8db39b]" aria-hidden />
+        <div className="grid justify-items-center gap-2 rounded-lg border border-dashed border-line bg-surface p-12 text-center">
+          <Network size={24} className="text-muted" aria-hidden />
           <h2 className="text-sm font-medium text-ink">{query ? "No matching instructions" : "No AGENTS.md files found"}</h2>
           <p className="text-13 text-muted">
             {query ? "Try a broader filter." : (

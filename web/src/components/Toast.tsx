@@ -41,14 +41,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={t.id}
             role={t.kind === "error" ? "alert" : "status"}
             className={clsx(
-              "toast-in pointer-events-auto flex items-start gap-3 rounded-lg border bg-white px-4 py-3 shadow-lg",
+              "toast-in pointer-events-auto flex items-start gap-3 rounded-lg border bg-surface px-4 py-3 shadow-lg",
               t.kind === "error" ? "border-danger-line" : "border-line",
             )}
           >
             {t.kind === "error" ? (
               <CircleAlert size={17} className="mt-0.5 shrink-0 text-danger" aria-hidden />
             ) : (
-              <CircleCheck size={17} className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <CircleCheck size={17} className="mt-0.5 shrink-0 text-accent" aria-hidden />
             )}
             <div className="min-w-0 flex-1">
               <p className="text-13 font-medium text-ink">{t.summary}</p>
