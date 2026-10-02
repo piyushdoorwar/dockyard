@@ -15,9 +15,10 @@ import { CSRF_HEADER } from "../../shared/types.js";
 const LOOPBACK_HOSTNAMES = new Set(["localhost", "127.0.0.1", "[::1]"]);
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
-function hostnameOf(host: string): string | null {
+/** A Host header as URL parses it: lowercased, default port dropped. */
+function parseHost(host: string): URL | null {
   try {
-    return new URL(`http://${host}`).hostname;
+    return new URL(`http://${host}`);
   } catch {
     return null;
   }
@@ -25,8 +26,8 @@ function hostnameOf(host: string): string | null {
 
 export function isLoopbackHost(host: string | undefined): boolean {
   if (!host) return false;
-  const name = hostnameOf(host);
-  return name !== null && LOOPBACK_HOSTNAMES.has(name);
+  const name = parseHost(host)?.hostname;
+  return name !== undefined && LOOPBACK_HOSTNAMES.has(name);
 }
 
 /** No Origin (curl, health checks) is fine; otherwise it must be this very server. */
@@ -34,22 +35,31 @@ export function isSameOrigin(origin: string | undefined, host: string | undefine
   if (origin === undefined) return true;
   if (!host) return false;
   try {
-    return new URL(origin).host === host;
+    // Compare normalised forms: a browser omits :80 from Origin and lowercases
+    // it, while the Host header is sent as typed.
+    return new URL(origin).host === parseHost(host)?.host;
   } catch {
     return false;
   }
 }
 
-const CONTENT_SECURITY_POLICY = [
-  "default-src 'self'",
-  "script-src 'self'",
-  // PrimeReact positions overlays with inline styles.
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:",
-  "font-src 'self' data:",
-  "connect-src 'self' ws://localhost:* ws://127.0.0.1:* ws://[::1]:*",
-  "frame-ancestors 'none'",
-].join("; ");
+/**
+ * Older Safari doesn't treat ws: as matching 'self', so the socket origin is
+ * named explicitly — this exact host and port, not every port on localhost.
+ */
+export function contentSecurityPolicy(host: string | undefined): string {
+  const normalised = host && isLoopbackHost(host) ? parseHost(host)?.host : undefined;
+  return [
+    "default-src 'self'",
+    "script-src 'self'",
+    // React renders style={...} props as inline style attributes.
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self' data:",
+    normalised ? `connect-src 'self' ws://${normalised} wss://${normalised}` : "connect-src 'self'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+}
 
 export function registerSecurity(app: FastifyInstance): void {
   app.addHook("onRequest", async (req, reply) => {
@@ -66,10 +76,13 @@ export function registerSecurity(app: FastifyInstance): void {
     }
   });
 
-  app.addHook("onSend", async (_req, reply) => {
+  app.addHook("onSend", async (req, reply) => {
     reply.header("X-Content-Type-Options", "nosniff");
     reply.header("X-Frame-Options", "DENY");
     reply.header("Referrer-Policy", "no-referrer");
-    reply.header("Content-Security-Policy", CONTENT_SECURITY_POLICY);
+    // Other sites can still fire no-cors GETs at us (<script src>, <img>);
+    // this stops the browser handing them the response body.
+    reply.header("Cross-Origin-Resource-Policy", "same-origin");
+    reply.header("Content-Security-Policy", contentSecurityPolicy(req.headers.host));
   });
 }

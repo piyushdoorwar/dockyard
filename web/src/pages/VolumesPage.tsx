@@ -1,9 +1,9 @@
-import { Column } from "primereact/column";
-import { DataTable } from "primereact/datatable";
+import { Eraser, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { VolumeSummary } from "../../../shared/types";
 import { Button, IconButton } from "../components/Button";
 import { useConfirm } from "../components/Confirm";
+import { type Column, DataTable } from "../components/DataTable";
 import { ErrorBanner, NoItemFound, PageHeader } from "../components/Page";
 import { SearchBar } from "../components/SearchBar";
 import { Badge } from "../components/StatusBadge";
@@ -47,6 +47,21 @@ export function VolumesPage() {
     if (ok) await run("prune", api.pruneVolumes, (r) => `Removed ${r.deleted} volume(s), reclaimed ${formatBytes(r.reclaimed)}`);
   };
 
+  const columns: Column<VolumeSummary>[] = [
+    { key: "name", header: "Name", minWidth: 220, sortValue: (v) => v.name, render: (v) => <span className="font-medium [overflow-wrap:anywhere] text-ink">{v.name}</span> },
+    { key: "project", header: "Stack", sortValue: (v) => v.project, render: (v) => <span className="text-13">{v.project ?? "—"}</span> },
+    {
+      key: "status",
+      header: "Status",
+      sortValue: (v) => v.refCount,
+      render: (v) =>
+        v.refCount === null ? <span className="text-muted">—</span> : v.refCount > 0 ? <Badge tone="success">In use</Badge> : <Badge tone="neutral">Unused</Badge>,
+    },
+    { key: "size", header: "Size", sortValue: (v) => v.size, render: (v) => <span className="text-13 whitespace-nowrap">{formatBytes(v.size)}</span> },
+    { key: "created", header: "Created", sortValue: (v) => v.created, render: (v) => <span className="text-13 whitespace-nowrap">{timeAgo(v.created)}</span> },
+    { key: "actions", header: "Actions", width: 90, render: (v) => <IconButton icon={Trash2} label={`Delete ${v.name}`} danger onClick={() => remove(v)} disabled={busy !== null} /> },
+  ];
+
   return (
     <>
       <PageHeader
@@ -55,32 +70,21 @@ export function VolumesPage() {
         actions={
           <>
             <SearchBar value={query} onChange={setQuery} placeholder="Search volumes" />
-            <Button variant="cancel" icon="pi-trash" onClick={prune} disabled={busy !== null}>
+            <Button variant="cancel" icon={Eraser} onClick={prune} disabled={busy !== null}>
               Remove unused
             </Button>
           </>
         }
       />
       <ErrorBanner error={error} />
-      <DataTable value={rows} dataKey="name" loading={loading && !data} emptyMessage={<NoItemFound message={query ? "No volumes match." : "No volumes yet."} />}>
-        <Column field="name" header="Name" sortable body={(v: VolumeSummary) => <span className="font-medium break-all text-ink">{v.name}</span>} />
-        <Column field="project" header="Stack" sortable body={(v: VolumeSummary) => <span className="text-13">{v.project ?? "—"}</span>} />
-        <Column
-          field="refCount"
-          header="Status"
-          sortable
-          body={(v: VolumeSummary) =>
-            v.refCount === null ? <span className="text-muted">—</span> : v.refCount > 0 ? <Badge tone="success">In use</Badge> : <Badge tone="neutral">Unused</Badge>
-          }
-        />
-        <Column field="size" header="Size" sortable body={(v: VolumeSummary) => <span className="text-13">{formatBytes(v.size)}</span>} />
-        <Column field="created" header="Created" sortable body={(v: VolumeSummary) => <span className="text-13">{timeAgo(v.created)}</span>} />
-        <Column
-          header="Actions"
-          style={{ width: 90 }}
-          body={(v: VolumeSummary) => <IconButton icon="pi-trash" label={`Delete ${v.name}`} danger onClick={() => remove(v)} disabled={busy !== null} />}
-        />
-      </DataTable>
+      <DataTable
+        rows={rows}
+        rowKey={(v) => v.name}
+        columns={columns}
+        loading={loading && !data}
+        defaultSort={{ key: "name", dir: "asc" }}
+        empty={<NoItemFound message={query ? "No volumes match." : "No volumes yet."} />}
+      />
     </>
   );
 }

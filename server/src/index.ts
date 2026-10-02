@@ -19,9 +19,13 @@ const app = await buildApp({
   workspaceRoot: process.env.DOCKYARD_WORKSPACE ?? process.cwd(),
 });
 
+// app.close() waits for in-flight requests, and an image pull can take
+// minutes, so give up waiting after a few seconds rather than hang `docker stop`.
+const SHUTDOWN_GRACE_MS = 5_000;
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
-  process.on(signal, () => {
-    void app.close().then(() => process.exit(0));
+  process.once(signal, () => {
+    setTimeout(() => process.exit(0), SHUTDOWN_GRACE_MS).unref();
+    void app.close().finally(() => process.exit(0));
   });
 }
 

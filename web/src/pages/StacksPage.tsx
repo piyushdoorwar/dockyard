@@ -1,9 +1,9 @@
-import { Column } from "primereact/column";
-import { DataTable, type DataTableExpandedRows } from "primereact/datatable";
+import { Play, RotateCw, Square, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { BulkResult, StackSummary } from "../../../shared/types";
 import { IconButton } from "../components/Button";
 import { useConfirm } from "../components/Confirm";
+import { type Column, DataTable } from "../components/DataTable";
 import { ErrorBanner, NoItemFound, PageHeader } from "../components/Page";
 import { PortLinks } from "../components/PortLinks";
 import { SearchBar } from "../components/SearchBar";
@@ -12,8 +12,10 @@ import { useToast } from "../components/Toast";
 import { api, type ContainerAction } from "../lib/api";
 import { useAction } from "../lib/useAction";
 import { usePolling } from "../lib/usePolling";
-import { ContainerActions, ContainerName } from "./ContainersPage";
 import { useContainerActions } from "../lib/useContainerActions";
+import { ContainerActions, ContainerName } from "./ContainersPage";
+
+const SELF_STACK_REASON = "This stack runs Dockyard itself. Manage it from your host terminal.";
 
 const PAST: Record<ContainerAction | "remove", string> = {
   start: "started",
@@ -29,7 +31,6 @@ export function StacksPage() {
   const confirm = useConfirm();
   const toast = useToast();
   const [query, setQuery] = useState("");
-  const [expanded, setExpanded] = useState<DataTableExpandedRows>({});
 
   const rows = useMemo(
     () => (data ?? []).filter((s) => !query || s.name.toLowerCase().includes(query.toLowerCase())),
@@ -63,6 +64,43 @@ export function StacksPage() {
     if (ok) await run(`${s.name}:remove`, () => api.removeStack(s.name), (r) => report(s.name, PAST.remove, r));
   };
 
+  const columns: Column<StackSummary>[] = [
+    {
+      key: "name",
+      header: "Stack",
+      minWidth: 220,
+      sortValue: (s) => s.name,
+      render: (s) => (
+        <div className="flex flex-col gap-1">
+          <span className="font-medium text-ink">{s.name}</span>
+          {s.workingDir && <span className="font-mono text-12 break-all text-muted">{s.workingDir}</span>}
+        </div>
+      ),
+    },
+    { key: "status", header: "Status", sortValue: (s) => s.running / Math.max(1, s.total), render: (s) => <StackStatusBadge status={s.status} running={s.running} total={s.total} /> },
+    { key: "total", header: "Containers", sortValue: (s) => s.total, render: (s) => s.total },
+    {
+      key: "actions",
+      header: "Actions",
+      width: 132,
+      render: (s) => {
+        // Stopping or deleting the stack Dockyard runs in would take the UI down with it.
+        const self = s.containers.some((c) => c.isSelf) ? SELF_STACK_REASON : undefined;
+        return (
+          <div className="flex items-center gap-1">
+            {s.status === "stopped" ? (
+              <IconButton icon={Play} label={`Start ${s.name}`} onClick={() => stackAction(s, "start")} disabled={busy !== null} />
+            ) : (
+              <IconButton icon={Square} label={`Stop ${s.name}`} danger onClick={() => stackAction(s, "stop")} disabled={!!self || busy !== null} disabledReason={self} />
+            )}
+            <IconButton icon={RotateCw} label={`Restart ${s.name}`} onClick={() => stackAction(s, "restart")} disabled={!!self || busy !== null} disabledReason={self} />
+            <IconButton icon={Trash2} label={`Delete ${s.name}`} danger onClick={() => removeStack(s)} disabled={!!self || busy !== null} disabledReason={self} />
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <>
       <PageHeader
@@ -72,13 +110,16 @@ export function StacksPage() {
       />
       <ErrorBanner error={error} />
       <DataTable
-        value={rows}
-        dataKey="name"
+        rows={rows}
+        rowKey={(s) => s.name}
+        columns={columns}
         loading={loading && !data}
-        expandedRows={expanded}
-        onRowToggle={(e) => setExpanded(e.data as DataTableExpandedRows)}
-        rowExpansionTemplate={(s: StackSummary) => (
-          <div className="px-4 py-2">
+        defaultSort={{ key: "name", dir: "asc" }}
+        expandLabel={(s) => `Containers of ${s.name}`}
+        expansion={(s) =>
+          s.containers.length === 0 ? (
+            <p className="py-3 text-13 text-muted">No containers left in this stack.</p>
+          ) : (
             <table className="w-full text-sm">
               <tbody>
                 {s.containers.map((c) => (
@@ -100,40 +141,10 @@ export function StacksPage() {
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
-        emptyMessage={<NoItemFound message={query ? "No stacks match." : "No compose stacks yet. Run `docker compose up` in a repo."} />}
-      >
-        <Column expander style={{ width: 48 }} />
-        <Column
-          field="name"
-          header="Stack"
-          sortable
-          body={(s: StackSummary) => (
-            <div className="flex flex-col gap-1">
-              <span className="font-medium text-ink">{s.name}</span>
-              {s.workingDir && <span className="text-xs text-muted">{s.workingDir}</span>}
-            </div>
-          )}
-        />
-        <Column header="Status" body={(s: StackSummary) => <StackStatusBadge status={s.status} running={s.running} total={s.total} />} />
-        <Column field="total" header="Containers" sortable />
-        <Column
-          header="Actions"
-          style={{ width: 160 }}
-          body={(s: StackSummary) => (
-            <div className="flex items-center gap-1">
-              {s.status === "stopped" ? (
-                <IconButton icon="pi-play" label={`Start ${s.name}`} onClick={() => stackAction(s, "start")} disabled={busy !== null} />
-              ) : (
-                <IconButton icon="pi-stop" label={`Stop ${s.name}`} danger onClick={() => stackAction(s, "stop")} disabled={busy !== null} />
-              )}
-              <IconButton icon="pi-refresh" label={`Restart ${s.name}`} onClick={() => stackAction(s, "restart")} disabled={busy !== null} />
-              <IconButton icon="pi-trash" label={`Delete ${s.name}`} danger onClick={() => removeStack(s)} disabled={busy !== null} />
-            </div>
-          )}
-        />
-      </DataTable>
+          )
+        }
+        empty={<NoItemFound message={query ? "No stacks match." : "No Compose stacks yet."} hint={query ? undefined : "Run docker compose up in a project and it shows up here."} />}
+      />
     </>
   );
 }

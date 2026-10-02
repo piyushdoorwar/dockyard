@@ -1,4 +1,8 @@
 node_modules
 dist
 coverage
+.git
+.github
+.claude
+site
 *.md

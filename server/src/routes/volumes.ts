@@ -4,14 +4,37 @@ import type { PruneResult } from "../../../shared/types.js";
 import { toVolumeSummary } from "../mappers.js";
 import { NAME_OR_ID } from "./schemas.js";
 
+interface VolumeUsage {
+  Name: string;
+  UsageData?: { Size?: number; RefCount?: number } | null;
+}
+
+/**
+ * Disk usage for volumes only. `type=volume` (Engine API 1.42+) skips sizing
+ * every image layer and container filesystem, which is most of the cost of a
+ * full `docker system df`; older engines ignore it and answer in full.
+ * dockerode's df() doesn't forward query options, hence the raw dial.
+ */
+export function volumeUsage(docker: Docker): Promise<VolumeUsage[]> {
+  return new Promise((resolve, reject) => {
+    docker.modem.dial(
+      {
+        path: "/system/df?",
+        method: "GET",
+        options: { type: ["volume"] },
+        statusCodes: { 200: true, 500: "server error" },
+      },
+      (err, data) => (err ? reject(err) : resolve(((data as { Volumes?: VolumeUsage[] | null })?.Volumes ?? []))),
+    );
+  });
+}
+
 export function volumeRoutes(app: FastifyInstance, docker: Docker): void {
   app.get("/api/volumes", async () => {
     // listVolumes has no sizes; the disk-usage endpoint does.
-    const [list, df] = await Promise.all([docker.listVolumes(), docker.df()]);
-    const usage = new Map<string, { Name: string; UsageData?: { Size?: number; RefCount?: number } }>();
-    for (const v of (df.Volumes ?? []) as { Name: string; UsageData?: { Size?: number; RefCount?: number } }[]) {
-      usage.set(v.Name, v);
-    }
+    const [list, sizes] = await Promise.all([docker.listVolumes(), volumeUsage(docker)]);
+    const usage = new Map<string, VolumeUsage>();
+    for (const v of sizes) usage.set(v.Name, v);
     return (list.Volumes ?? []).map((v) => toVolumeSummary(v, usage)).sort((a, b) => a.name.localeCompare(b.name));
   });
 

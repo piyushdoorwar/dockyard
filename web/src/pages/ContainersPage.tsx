@@ -1,9 +1,9 @@
-import { Column } from "primereact/column";
-import { DataTable } from "primereact/datatable";
+import { Play, RotateCw, Square, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { ContainerSummary } from "../../../shared/types";
 import { IconButton } from "../components/Button";
+import { type Column, DataTable } from "../components/DataTable";
 import { ErrorBanner, NoItemFound, PageHeader } from "../components/Page";
 import { PortLinks } from "../components/PortLinks";
 import { SearchBar, Toggle } from "../components/SearchBar";
@@ -26,12 +26,12 @@ export function ContainerActions({ c, busy, act, remove }: { c: ContainerSummary
   return (
     <div className="flex items-center gap-1">
       {running ? (
-        <IconButton icon="pi-stop" label={`Stop ${c.name}`} danger onClick={() => act(c, "stop")} disabled={!!self || busy !== null} disabledReason={self} />
+        <IconButton icon={Square} label={`Stop ${c.name}`} danger onClick={() => act(c, "stop")} disabled={!!self || busy !== null} disabledReason={self} />
       ) : (
-        <IconButton icon="pi-play" label={`Start ${c.name}`} onClick={() => act(c, "start")} disabled={busy !== null} />
+        <IconButton icon={Play} label={`Start ${c.name}`} onClick={() => act(c, "start")} disabled={busy !== null} />
       )}
-      <IconButton icon="pi-refresh" label={`Restart ${c.name}`} onClick={() => act(c, "restart")} disabled={!!self || busy !== null} disabledReason={self} />
-      <IconButton icon="pi-trash" label={`Delete ${c.name}`} danger onClick={() => remove(c)} disabled={!!self || busy !== null} disabledReason={self} />
+      <IconButton icon={RotateCw} label={`Restart ${c.name}`} onClick={() => act(c, "restart")} disabled={!!self || busy !== null} disabledReason={self} />
+      <IconButton icon={Trash2} label={`Delete ${c.name}`} danger onClick={() => remove(c)} disabled={!!self || busy !== null} disabledReason={self} />
     </div>
   );
 }
@@ -40,13 +40,13 @@ export function ContainerName({ c }: { c: ContainerSummary }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="flex items-center gap-2">
-        <Link to={`/containers/${c.id}`} className="font-medium text-primary hover:underline">
+        <Link to={`/containers/${c.id}`} className="font-medium [overflow-wrap:anywhere] text-primary hover:underline">
           {c.name}
         </Link>
-        {c.isSelf && <span className="rounded bg-customBgColor-grey px-1.5 py-0.5 text-[11px] text-primary">this app</span>}
+        {c.isSelf && <span className="shrink-0 rounded whitespace-nowrap bg-primary-soft px-1.5 py-0.5 text-11 font-medium text-primary">this app</span>}
       </span>
-      <span className="text-xs text-muted">
-        {c.shortId}
+      <span className="text-12 text-muted">
+        <span className="font-mono">{c.shortId}</span>
         {c.project && (
           <>
             {" · "}
@@ -72,6 +72,15 @@ export function ContainersPage() {
   );
   const running = (data ?? []).filter((c) => c.state === "running").length;
 
+  const columns: Column<ContainerSummary>[] = [
+    { key: "name", header: "Name", minWidth: 200, sortValue: (c) => c.name, render: (c) => <ContainerName c={c} /> },
+    { key: "image", header: "Image", minWidth: 180, sortValue: (c) => c.image, render: (c) => <span className="text-13 [overflow-wrap:anywhere]">{c.image}</span> },
+    { key: "state", header: "Status", sortValue: (c) => c.state, render: (c) => <ContainerStatus state={c.state} status={c.status} /> },
+    { key: "ports", header: "Port(s)", render: (c) => <PortLinks ports={c.ports} /> },
+    { key: "created", header: "Created", sortValue: (c) => c.created, render: (c) => <span className="text-13 whitespace-nowrap">{timeAgo(c.created)}</span> },
+    { key: "actions", header: "Actions", width: 132, render: (c) => <ContainerActions c={c} {...actions} /> },
+  ];
+
   return (
     <>
       <PageHeader
@@ -86,21 +95,13 @@ export function ContainersPage() {
       />
       <ErrorBanner error={error} />
       <DataTable
-        value={rows}
-        dataKey="id"
+        rows={rows}
+        rowKey={(c) => c.id}
+        columns={columns}
         loading={loading && !data}
-        emptyMessage={<NoItemFound message={query || onlyRunning ? "No containers match." : "No containers yet."} />}
-        sortField="name"
-        sortOrder={1}
-        removableSort
-      >
-        <Column field="name" header="Name" sortable body={(c: ContainerSummary) => <ContainerName c={c} />} />
-        <Column field="image" header="Image" sortable body={(c: ContainerSummary) => <span className="text-13">{c.image}</span>} />
-        <Column field="state" header="Status" sortable body={(c: ContainerSummary) => <ContainerStatus state={c.state} status={c.status} />} />
-        <Column header="Port(s)" body={(c: ContainerSummary) => <PortLinks ports={c.ports} />} />
-        <Column field="created" header="Created" sortable body={(c: ContainerSummary) => <span className="text-13">{timeAgo(c.created)}</span>} />
-        <Column header="Actions" body={(c: ContainerSummary) => <ContainerActions c={c} {...actions} />} style={{ width: 140 }} />
-      </DataTable>
+        defaultSort={{ key: "name", dir: "asc" }}
+        empty={<NoItemFound message={query || onlyRunning ? "No containers match." : "No containers yet."} />}
+      />
     </>
   );
 }

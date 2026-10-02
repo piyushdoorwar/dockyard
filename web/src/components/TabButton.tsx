@@ -1,27 +1,30 @@
 import clsx from "clsx";
+import type { LucideIcon } from "lucide-react";
 
 export interface Tab<T extends string> {
   id: T;
   label: string;
+  icon?: LucideIcon;
 }
 
-/** Shared segmented tab control. */
+/** Segmented control: a bordered pill group with a solid green active item. */
 export function TabButton<T extends string>({ tabs, active, onChange }: { tabs: Tab<T>[]; active: T; onChange: (id: T) => void }) {
   return (
-    <div role="tablist" className="inline-flex rounded-lg border border-line bg-white p-1">
-      {tabs.map((t) => (
+    <div role="tablist" className="inline-flex max-w-full overflow-x-auto rounded-lg border border-line bg-white p-1">
+      {tabs.map(({ id, label, icon: Icon }) => (
         <button
-          key={t.id}
+          key={id}
           role="tab"
           type="button"
-          aria-selected={t.id === active}
-          onClick={() => onChange(t.id)}
+          aria-selected={id === active}
+          onClick={() => onChange(id)}
           className={clsx(
-            "rounded-lg px-5 py-1.5 text-[13px] whitespace-nowrap",
-            t.id === active ? "bg-primary-focus text-white" : "text-grey hover:bg-gray-100",
+            "inline-flex items-center gap-1.5 rounded-md px-4 py-1.5 text-13 whitespace-nowrap transition-colors",
+            id === active ? "bg-primary text-white" : "text-grey hover:bg-line-soft",
           )}
         >
-          {t.label}
+          {Icon && <Icon size={14} strokeWidth={2} aria-hidden />}
+          {label}
         </button>
       ))}
     </div>

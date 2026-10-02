@@ -1,3 +1,4 @@
+import { ArrowLeft, Braces, ChartLine, Loader2, Play, RotateCw, ScrollText, Square, SquareTerminal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import type { PortMapping } from "../../../shared/types";
@@ -9,18 +10,30 @@ import { TerminalView } from "../components/container/TerminalView";
 import { ErrorBanner, PageHeader } from "../components/Page";
 import { PortLinks } from "../components/PortLinks";
 import { ContainerStatus } from "../components/StatusBadge";
-import { TabButton } from "../components/TabButton";
+import { type Tab, TabButton } from "../components/TabButton";
 import { api, type ContainerInspect } from "../lib/api";
 import { SELF_REASON, useContainerActions } from "../lib/useContainerActions";
 import { usePolling } from "../lib/usePolling";
 
 type TabId = "logs" | "inspect" | "terminal" | "stats";
-const TABS: { id: TabId; label: string }[] = [
-  { id: "logs", label: "Logs" },
-  { id: "inspect", label: "Inspect" },
-  { id: "terminal", label: "Terminal" },
-  { id: "stats", label: "Stats" },
+const TABS: Tab<TabId>[] = [
+  { id: "logs", label: "Logs", icon: ScrollText },
+  { id: "inspect", label: "Inspect", icon: Braces },
+  { id: "terminal", label: "Terminal", icon: SquareTerminal },
+  { id: "stats", label: "Stats", icon: ChartLine },
 ];
+
+function BackToContainers() {
+  return (
+    <Link to="/containers" className="inline-flex items-center gap-1.5 text-13 text-primary hover:underline">
+      <ArrowLeft size={14} aria-hidden /> Containers
+    </Link>
+  );
+}
+
+function Idle({ children }: { children: string }) {
+  return <p className="rounded-lg border border-dashed border-line bg-white px-5 py-10 text-center text-13 text-muted">{children}</p>;
+}
 
 export function portsFromInspect(info: ContainerInspect): PortMapping[] {
   const out: PortMapping[] = [];
@@ -54,10 +67,16 @@ export function ContainerDetailPage() {
   if (!info) {
     return (
       <>
-        <Link to="/containers" className="text-13 text-primary hover:underline">
-          ← Containers
-        </Link>
-        <div className="mt-4">{error ? <ErrorBanner error={error} /> : <p className="text-13 text-muted">Loading…</p>}</div>
+        <BackToContainers />
+        <div className="mt-4">
+          {error ? (
+            <ErrorBanner error={error} />
+          ) : (
+            <p className="flex items-center gap-2 text-13 text-muted">
+              <Loader2 size={14} className="spin" aria-hidden /> Loading
+            </p>
+          )}
+        </div>
       </>
     );
   }
@@ -70,20 +89,18 @@ export function ContainerDetailPage() {
 
   return (
     <>
-      <Link to="/containers" className="text-13 text-primary hover:underline">
-        ← Containers
-      </Link>
+      <BackToContainers />
       <div className="mt-3">
         <PageHeader
           title={
-            <span className="flex items-center gap-3">
+            <span className="flex flex-wrap items-center gap-3">
               {name} <ContainerStatus state={info.State.Status} status={statusText(info)} />
             </span>
           }
           subtitle={
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              <span>{info.Config.Image}</span>
-              <span>{info.Id.slice(0, 12)}</span>
+              <span className="break-all">{info.Config.Image}</span>
+              <span className="font-mono">{info.Id.slice(0, 12)}</span>
               {project && <span>Stack: {project}</span>}
               <PortLinks ports={portsFromInspect(info)} />
             </span>
@@ -91,20 +108,20 @@ export function ContainerDetailPage() {
           actions={
             <>
               {running ? (
-                <Button variant="danger-outline" icon="pi-stop" onClick={() => act(c, "stop")} disabled={self || busy !== null} title={self ? SELF_REASON : undefined}>
+                <Button variant="danger-outline" icon={Square} onClick={() => act(c, "stop")} disabled={self || busy !== null} title={self ? SELF_REASON : undefined}>
                   Stop
                 </Button>
               ) : (
-                <Button variant="cancel" icon="pi-play" onClick={() => act(c, "start")} disabled={busy !== null}>
+                <Button variant="cancel" icon={Play} onClick={() => act(c, "start")} disabled={busy !== null}>
                   Start
                 </Button>
               )}
-              <Button variant="cancel" icon="pi-refresh" onClick={() => act(c, "restart")} disabled={self || busy !== null} title={self ? SELF_REASON : undefined}>
+              <Button variant="cancel" icon={RotateCw} onClick={() => act(c, "restart")} disabled={self || busy !== null} title={self ? SELF_REASON : undefined}>
                 Restart
               </Button>
               <Button
                 variant="delete"
-                icon="pi-trash"
+                icon={Trash2}
                 disabled={self || busy !== null}
                 title={self ? SELF_REASON : undefined}
                 onClick={async () => {
@@ -123,8 +140,8 @@ export function ContainerDetailPage() {
         {tab === "logs" && <LogsView containerId={info.Id} />}
         {tab === "inspect" && <InspectView info={info} />}
         {tab === "terminal" &&
-          (running ? <TerminalView containerId={info.Id} /> : <p className="text-13 text-muted">Start the container to open a terminal.</p>)}
-        {tab === "stats" && (running ? <StatsView containerId={info.Id} /> : <p className="text-13 text-muted">Start the container to see live stats.</p>)}
+          (running ? <TerminalView containerId={info.Id} /> : <Idle>Start the container to open a terminal.</Idle>)}
+        {tab === "stats" && (running ? <StatsView containerId={info.Id} /> : <Idle>Start the container to see live stats.</Idle>)}
       </div>
     </>
   );

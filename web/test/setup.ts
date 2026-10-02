@@ -8,7 +8,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-// jsdom lacks these; PrimeReact and the terminal touch them.
+// jsdom lacks these; the terminal touches them.
 if (!window.matchMedia) {
   window.matchMedia = ((query: string) => ({
     matches: false,

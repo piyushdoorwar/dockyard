@@ -93,7 +93,7 @@ describe("image references", () => {
     ["nginx:1.27", ["nginx", "1.27"]],
     ["localhost:5000/team/app", ["localhost:5000/team/app", "latest"]],
     ["localhost:5000/team/app:2", ["localhost:5000/team/app", "2"]],
-    ["ghcr.io/siuk/x@sha256:abc", ["ghcr.io/siuk/x", "<none>"]],
+    ["ghcr.io/acme/x@sha256:abc", ["ghcr.io/acme/x", "<none>"]],
   ])("splitRepoTag(%s)", (ref, expected) => {
     expect(splitRepoTag(ref)).toEqual(expected);
   });
@@ -191,6 +191,25 @@ describe("computeStats", () => {
 
   it("reports 0% CPU on the first sample (no previous reading)", () => {
     expect(computeStats({ cpu_stats: { cpu_usage: { total_usage: 5 }, system_cpu_usage: 5 } }).cpuPercent).toBe(0);
+  });
+
+  it("subtracts cgroup v1's hierarchical inactive_file, like the CLI", () => {
+    const s = computeStats({ memory_stats: { usage: 1000, limit: 4000, stats: { total_inactive_file: 400, inactive_file: 100, cache: 600 } } });
+    expect(s.memUsage).toBe(600);
+  });
+
+  it("computes Windows CPU from sample timestamps and processor count", () => {
+    const s = computeStats({
+      read: "2026-10-01T00:00:01.000000000Z",
+      preread: "2026-10-01T00:00:00.000000000Z",
+      num_procs: 2,
+      // 1s on 2 processors is 2e7 ticks of 100ns; 5e6 used is 25%.
+      cpu_stats: { cpu_usage: { total_usage: 15_000_000 } },
+      precpu_stats: { cpu_usage: { total_usage: 10_000_000 } },
+      memory_stats: { privateworkingset: 1234 },
+    });
+    expect(s.cpuPercent).toBe(25);
+    expect(s.memUsage).toBe(1234);
   });
 });
 

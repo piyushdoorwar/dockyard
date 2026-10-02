@@ -173,3 +173,51 @@ describe("SideNav", () => {
     expect(screen.getByRole("link", { name: "Dashboard" })).not.toHaveClass("is-active");
   });
 });
+
+describe("StacksPage self-protection", () => {
+  it("won't stop, restart or delete the stack Dockyard runs in", async () => {
+    const self: StackSummary = {
+      name: "tools",
+      workingDir: null,
+      status: "running",
+      running: 1,
+      total: 1,
+      containers: [container({ id: "d1", name: "dockyard", project: "tools", isSelf: true })],
+    };
+    mockApi({ "GET /api/stacks": [self] });
+    renderPage(<StacksPage />);
+    expect(await screen.findByRole("button", { name: "Stop tools" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Restart tools" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Delete tools" })).toBeDisabled();
+  });
+
+  it("expands a stack to show its containers", async () => {
+    mockApi({ "GET /api/stacks": STACKS });
+    const user = userEvent.setup();
+    renderPage(<StacksPage />);
+    const expand = await screen.findByRole("button", { name: "Containers of sample-backend" });
+    expect(screen.queryByRole("link", { name: "api" })).not.toBeInTheDocument();
+    await user.click(expand);
+    expect(expand).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("link", { name: "api" })).toHaveAttribute("href", "/containers/a1");
+  });
+});
+
+describe("table sorting", () => {
+  it("sorts by a column, then reverses, then restores the default order", async () => {
+    mockApi({ "GET /api/images": IMAGES });
+    const user = userEvent.setup();
+    renderPage(<ImagesPage />);
+    await screen.findByText("redis");
+    const names = () => screen.getAllByRole("row").slice(1).map((r) => r.querySelector("td")?.textContent);
+    expect(names()).toEqual(["<none>", "redis"]);
+    const size = screen.getByRole("button", { name: "Size" });
+    await user.click(size);
+    expect(names()).toEqual(["<none>", "redis"]);
+    expect(size.closest("th")).toHaveAttribute("aria-sort", "ascending");
+    await user.click(size);
+    expect(names()).toEqual(["redis", "<none>"]);
+    await user.click(size);
+    expect(size.closest("th")).not.toHaveAttribute("aria-sort");
+  });
+});

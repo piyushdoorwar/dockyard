@@ -1,17 +1,19 @@
 import clsx from "clsx";
+import type { ReactNode } from "react";
 import type { StackStatus } from "../lib/api";
 import { exitCode } from "../lib/format";
 
 type Tone = "success" | "warning" | "danger" | "neutral";
 
+// Soft fills with dark text, so a column of statuses stays calm to scan.
 const TONE: Record<Tone, { pill: string; dot: string }> = {
-  success: { pill: "bg-[#EAFFF1] text-[#04B440]", dot: "bg-[#17C653]" },
-  warning: { pill: "bg-[#FFF8DD] text-[#B17C00]", dot: "bg-[#F6B100]" },
-  danger: { pill: "bg-[#FFEEF3] text-danger", dot: "bg-danger" },
+  success: { pill: "bg-success-soft text-primary-hover", dot: "bg-primary" },
+  warning: { pill: "bg-warning-soft text-warning", dot: "bg-warning" },
+  danger: { pill: "bg-danger-soft text-danger", dot: "bg-danger" },
   neutral: { pill: "bg-line-soft text-grey", dot: "bg-muted" },
 };
 
-export function Badge({ tone, children }: { tone: Tone; children: React.ReactNode }) {
+export function Badge({ tone, children }: { tone: Tone; children: ReactNode }) {
   return (
     <span className={clsx("inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap", TONE[tone].pill)}>
       <span className={clsx("h-1.5 w-1.5 rounded-full", TONE[tone].dot)} aria-hidden />
@@ -20,7 +22,7 @@ export function Badge({ tone, children }: { tone: Tone; children: React.ReactNod
   );
 }
 
-/** Container state, with a non-zero exit code shown as a failure (like Docker Desktop). */
+/** Container state, with a non-zero exit code shown as a failure. */
 export function containerTone(state: string, status = ""): Tone {
   if (state === "running") return /\((unhealthy|health: starting)\)/.test(status) ? "warning" : "success";
   if (state === "paused" || state === "restarting" || state === "created") return "warning";

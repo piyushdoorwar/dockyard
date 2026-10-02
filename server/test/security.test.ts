@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { FastifyInstance } from "fastify";
-import { isLoopbackHost, isSameOrigin } from "../src/security.js";
+import { contentSecurityPolicy, isLoopbackHost, isSameOrigin } from "../src/security.js";
 import { appWith, fakeDocker, MUTATE } from "./helpers.js";
 
 describe("isLoopbackHost", () => {
@@ -21,6 +21,22 @@ describe("isSameOrigin", () => {
   });
   it.each(["http://evil.com", "http://localhost:3000", "null", "not a url"])("rejects %s", (o) => {
     expect(isSameOrigin(o, "localhost:41739")).toBe(false);
+  });
+  it("normalises the Host header the way browsers normalise Origin", () => {
+    // Served on port 80, the browser drops the port from Origin but not from Host.
+    expect(isSameOrigin("http://localhost", "localhost:80")).toBe(true);
+    expect(isSameOrigin("http://localhost:41739", "LOCALHOST:41739")).toBe(true);
+  });
+});
+
+describe("contentSecurityPolicy", () => {
+  it("allows WebSockets to this exact host and port only", () => {
+    const csp = contentSecurityPolicy("127.0.0.1:41739");
+    expect(csp).toContain("connect-src 'self' ws://127.0.0.1:41739 wss://127.0.0.1:41739;");
+    expect(csp).not.toContain(":*");
+  });
+  it("doesn't echo a foreign Host into the header", () => {
+    expect(contentSecurityPolicy("evil.example")).toContain("connect-src 'self';");
   });
 });
 
@@ -70,6 +86,7 @@ describe("request guard", () => {
     expect(res.headers["x-frame-options"]).toBe("DENY");
     expect(res.headers["x-content-type-options"]).toBe("nosniff");
     expect(res.headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+    expect(res.headers["cross-origin-resource-policy"]).toBe("same-origin");
   });
 
   it("rejects WebSocket upgrades from a foreign Origin", async () => {

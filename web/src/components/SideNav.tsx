@@ -1,49 +1,53 @@
 import clsx from "clsx";
+import { Boxes, Container, Database, HardDrive, Layers, LayoutDashboard, type LucideIcon, Network } from "lucide-react";
 import { NavLink } from "react-router";
+import { Logo } from "./Logo";
 
-export const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", icon: "pi-th-large", end: true },
-  { to: "/containers", label: "Containers", icon: "pi-box" },
-  { to: "/stacks", label: "Stacks", icon: "pi-sitemap" },
-  { to: "/images", label: "Images", icon: "pi-clone" },
-  { to: "/volumes", label: "Volumes", icon: "pi-database" },
-  { to: "/agents", label: "Agents", icon: "pi-sitemap" },
-] as const;
+export const NAV_ITEMS: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
+  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/containers", label: "Containers", icon: Container },
+  { to: "/stacks", label: "Stacks", icon: Layers },
+  { to: "/images", label: "Images", icon: Boxes },
+  { to: "/volumes", label: "Volumes", icon: Database },
+  { to: "/agents", label: "Agents", icon: Network },
+];
 
 export function SideNav() {
   return (
-    <aside className="dock-nav">
-      <div className="dock-brand">
-        <img src="/dockyard.svg" alt="" width={38} height={38} />
-        <div><strong>Dockyard</strong><span>Local runtime</span></div>
+    <aside className="flex h-full w-16 shrink-0 flex-col bg-white shadow-[1px_0_0_var(--color-line)] md:w-60">
+      <div className="flex items-center justify-center gap-2.5 px-3 pt-5 pb-4 md:justify-start md:px-5">
+        <Logo size={30} />
+        <span className="hidden text-[19px] font-bold tracking-tight text-ink md:inline">Dockyard</span>
       </div>
-      <div className="dock-nav-label">Workspace</div>
-      <nav aria-label="Main" className="dock-nav-scroll">
-        <ul className="dock-nav-list">
-          {NAV_ITEMS.map((item) => (
-            <li key={item.to}>
+      <div className="hidden px-6 pt-3 pb-2 text-11 font-medium tracking-wide text-muted uppercase md:block">Workspace</div>
+      <nav aria-label="Main" className="min-h-0 flex-1 overflow-y-auto px-2 md:px-3">
+        <ul className="grid gap-0.5">
+          {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+            <li key={to}>
               <NavLink
-                to={item.to}
-                end={"end" in item ? item.end : false}
+                to={to}
+                end={end}
+                title={label}
                 className={({ isActive }) =>
                   clsx(
-                    "dock-nav-link",
-                    isActive
-                      ? "is-active"
-                      : "",
+                    "flex h-10 items-center justify-center gap-3 rounded-md text-13 font-medium transition-colors md:justify-start md:px-3",
+                    isActive ? "is-active bg-primary text-white" : "text-grey hover:bg-primary-soft hover:text-primary",
                   )
                 }
               >
-                <i className={clsx("pi", item.icon)} aria-hidden />
-                <span>{item.label}</span>
+                <Icon size={17} strokeWidth={2} aria-hidden />
+                <span className="sr-only md:not-sr-only">{label}</span>
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
-      <div className="dock-nav-footer">
-        <span className="dock-pulse" aria-hidden />
-        <div><strong>Local only</strong><span>Your data stays here</span></div>
+      <div className="m-3 flex items-center justify-center gap-2.5 rounded-lg border border-line px-3 py-2.5 md:justify-start" title="Dockyard only answers requests from this machine">
+        <HardDrive size={15} className="shrink-0 text-primary" aria-hidden />
+        <div className="hidden min-w-0 md:block">
+          <p className="text-12 font-medium text-ink">Local only</p>
+          <p className="text-11 text-muted">Nothing leaves this machine</p>
+        </div>
       </div>
     </aside>
   );

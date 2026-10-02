@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import { PrimeReactProvider } from "primereact/api";
 import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router";
 import { vi } from "vitest";
@@ -48,11 +47,9 @@ export function mockApi(routes: Record<string, Handler | unknown>) {
 
 export function renderPage(ui: ReactElement, route = "/") {
   return render(
-    <PrimeReactProvider>
-      <MemoryRouter initialEntries={[route]}>
-        <Providers>{ui}</Providers>
-      </MemoryRouter>
-    </PrimeReactProvider>,
+    <MemoryRouter initialEntries={[route]}>
+      <Providers>{ui}</Providers>
+    </MemoryRouter>,
   );
 }
 

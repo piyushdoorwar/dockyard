@@ -26,7 +26,7 @@ describe("LogsView", () => {
         ],
       });
     });
-    expect(screen.getByText("● Live")).toBeInTheDocument();
+    expect(screen.getByTestId("log-state")).toHaveTextContent("Live");
     expect(screen.getByText("connection refused").closest("[data-stream]")).toHaveAttribute("data-stream", "stderr");
 
     await user.type(screen.getByRole("searchbox", { name: "Filter logs" }), "refused");

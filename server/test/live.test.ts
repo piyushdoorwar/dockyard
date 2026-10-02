@@ -82,6 +82,41 @@ describe("logs WebSocket", () => {
     expect(lines).toEqual([{ stream: "stdout", ts: null, text: "raw tty line" }]);
   });
 
+  it("keeps multi-byte characters intact when a chunk splits them", async () => {
+    const { asDocker, containers } = fakeDocker();
+    const c = fakeContainer({}, true);
+    const stream = new PassThrough();
+    c.logs.mockResolvedValue(stream);
+    containers.set("tty", c);
+    app = await appWith(asDocker);
+
+    const ws = await app.injectWS("/api/containers/tty/logs", WS_HEADERS);
+    const done = collect(ws, (m) => m.type === "end");
+    await vi.waitFor(() => expect(c.logs).toHaveBeenCalled());
+    const bytes = Buffer.from("caf\u00e9 \u2713\n");
+    stream.write(bytes.subarray(0, 4)); // ends half-way through the e-acute
+    stream.end(bytes.subarray(4));
+    const lines = (await done).flatMap((m) => (m.type === "logs" ? m.lines : []));
+    expect(lines).toEqual([{ stream: "stdout", ts: null, text: "caf\u00e9 \u2713" }]);
+  });
+
+  it("destroys the Docker stream if the browser left before it arrived", async () => {
+    const { asDocker, containers } = fakeDocker();
+    const c = fakeContainer();
+    const stream = new PassThrough();
+    let answer!: (s: PassThrough) => void;
+    c.logs.mockReturnValue(new Promise((resolve) => (answer = resolve)));
+    containers.set("web", c);
+    app = await appWith(asDocker);
+
+    const ws = await app.injectWS("/api/containers/web/logs", WS_HEADERS);
+    await vi.waitFor(() => expect(c.logs).toHaveBeenCalled());
+    ws.terminate();
+    await new Promise((r) => setTimeout(r, 20));
+    answer(stream);
+    await vi.waitFor(() => expect(stream.destroyed).toBe(true));
+  });
+
   it("sends an error message when the container doesn't exist", async () => {
     const { asDocker, containers } = fakeDocker();
     const c = fakeContainer();
@@ -135,6 +170,42 @@ describe("exec WebSocket", () => {
 
     shell.emit("data", Buffer.from("file.txt\r\n"));
     expect(await output).toBe("file.txt\r\n");
+    ws.terminate();
+  });
+
+  it("hangs up an exec session that started after the browser left", async () => {
+    const { asDocker, containers } = fakeDocker();
+    const c = fakeContainer();
+    const shell = new PassThrough();
+    let answer!: (s: PassThrough) => void;
+    const start = vi.fn(() => new Promise((resolve) => (answer = resolve)));
+    c.exec.mockResolvedValue({ start, resize: vi.fn() });
+    containers.set("web", c);
+    app = await appWith(asDocker);
+
+    const ws = await app.injectWS("/api/containers/web/exec", WS_HEADERS);
+    await vi.waitFor(() => expect(start).toHaveBeenCalled());
+    ws.terminate();
+    await new Promise((r) => setTimeout(r, 20));
+    answer(shell);
+    await vi.waitFor(() => expect(shell.destroyed).toBe(true));
+  });
+
+  it("stops reading shell output while the browser is behind", async () => {
+    const { asDocker, containers } = fakeDocker();
+    const c = fakeContainer();
+    const shell = new PassThrough();
+    c.exec.mockResolvedValue({ start: vi.fn().mockResolvedValue(shell), resize: vi.fn() });
+    containers.set("web", c);
+    app = await appWith(asDocker);
+
+    const ws = await app.injectWS("/api/containers/web/exec", WS_HEADERS);
+    await vi.waitFor(() => expect(shell.listenerCount("data")).toBe(1));
+    // One write over the high-water mark, faster than the socket can flush it.
+    shell.write(Buffer.alloc(2 * 1024 * 1024, 120));
+    await vi.waitFor(() => expect(shell.isPaused()).toBe(true));
+    // Once it drains, reading resumes.
+    await vi.waitFor(() => expect(shell.isPaused()).toBe(false));
     ws.terminate();
   });
 

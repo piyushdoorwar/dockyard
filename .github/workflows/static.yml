@@ -1,0 +1,52 @@
+# Deploys the product site (site/) to GitHub Pages.
+name: Deploy site to Pages
+
+on:
+  # Deploy on pushes to the default branch, so site edits go live.
+  push:
+    branches: ["main"]
+    paths:
+      - "site/**"
+      - ".github/scripts/generate-site-releases.cjs"
+      - ".github/workflows/static.yml"
+  # Re-deploy after a release, to refresh the releases manifest.
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; never cancel one that is already going out.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Generate release manifest
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/generate-site-releases.cjs
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "site"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

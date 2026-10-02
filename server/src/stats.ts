@@ -3,10 +3,14 @@ import type { StatsSample } from "../../shared/types.js";
 // Subset of the Engine API /containers/{id}/stats payload that we read.
 export interface RawStats {
   read?: string;
+  /** Windows only: when the previous sample was taken. */
+  preread?: string;
+  /** Windows only: processors available to the container. */
+  num_procs?: number;
   pids_stats?: { current?: number };
   cpu_stats?: CpuStats;
   precpu_stats?: CpuStats;
-  memory_stats?: { usage?: number; limit?: number; stats?: Record<string, number> };
+  memory_stats?: { usage?: number; limit?: number; stats?: Record<string, number>; privateworkingset?: number };
   networks?: Record<string, { rx_bytes?: number; tx_bytes?: number }>;
   blkio_stats?: { io_service_bytes_recursive?: { op: string; value: number }[] | null };
 }
@@ -24,15 +28,29 @@ export function computeStats(raw: RawStats): StatsSample {
   const cpuDelta = (cpu.cpu_usage?.total_usage ?? 0) - (pre.cpu_usage?.total_usage ?? 0);
   const systemDelta = (cpu.system_cpu_usage ?? 0) - (pre.system_cpu_usage ?? 0);
   const onlineCpus = cpu.online_cpus || cpu.cpu_usage?.percpu_usage?.length || 1;
-  // The first sample of a stream has no previous reading (system usage 0), so no delta yet.
-  const hasPrevious = (pre.system_cpu_usage ?? 0) > 0;
-  const cpuPercent =
-    hasPrevious && cpuDelta > 0 && systemDelta > 0 ? (cpuDelta / systemDelta) * onlineCpus * 100 : 0;
+  let cpuPercent = 0;
+  if (raw.num_procs && cpu.system_cpu_usage === undefined) {
+    // Windows has no system usage counter: CPU time is in 100ns ticks, measured
+    // against the wall-clock time between samples on every processor.
+    const intervalMs = Date.parse(raw.read ?? "") - Date.parse(raw.preread ?? "");
+    const possible = intervalMs * 10_000 * raw.num_procs;
+    if (possible > 0 && cpuDelta > 0) cpuPercent = (cpuDelta / possible) * 100;
+  } else {
+    // The first sample of a stream has no previous reading (system usage 0), so no delta yet.
+    const hasPrevious = (pre.system_cpu_usage ?? 0) > 0;
+    if (hasPrevious && cpuDelta > 0 && systemDelta > 0) cpuPercent = (cpuDelta / systemDelta) * onlineCpus * 100;
+  }
 
-  // cgroup v2 reports inactive_file, v1 reports cache — both are reclaimable page cache.
+  // Page cache is reclaimable, so `docker stats` leaves it out. cgroup v1 has
+  // both total_inactive_file (whole hierarchy, what the CLI uses) and
+  // inactive_file (this cgroup only); v2 only has inactive_file; very old
+  // engines only report cache. Windows reports a private working set instead.
   const mem = raw.memory_stats ?? {};
-  const cache = mem.stats?.inactive_file ?? mem.stats?.total_inactive_file ?? mem.stats?.cache ?? 0;
-  const memUsage = Math.max(0, (mem.usage ?? 0) - cache);
+  const cache = mem.stats?.total_inactive_file ?? mem.stats?.inactive_file ?? mem.stats?.cache ?? 0;
+  const memUsage =
+    mem.usage === undefined && typeof mem.privateworkingset === "number"
+      ? mem.privateworkingset
+      : Math.max(0, (mem.usage ?? 0) - cache);
   const memLimit = mem.limit ?? 0;
 
   let netRx = 0;

@@ -1,8 +1,8 @@
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { readAgentsManifest } from "../src/routes/agents.js";
+import { MAX_FILE_BYTES, readAgentsManifest } from "../src/routes/agents.js";
 
 const created: string[] = [];
 afterEach(() => {
@@ -36,5 +36,37 @@ describe("agent instruction discovery", () => {
 
     const manifest = await readAgentsManifest(root);
     expect(manifest.files).toEqual([]);
+  });
+
+  it("doesn't mistake comments in fenced code for headings", async () => {
+    const root = mkdtempSync(join(tmpdir(), "dockyard-agents-"));
+    created.push(root);
+    writeFileSync(join(root, "AGENTS.md"), "# Setup\n```sh\n# install deps\nnpm ci\n```\n## Tests ##\nRun them.\n");
+
+    const [file] = (await readAgentsManifest(root)).files;
+    expect(file.sections.map((s) => s.title)).toEqual(["Setup", "Tests"]);
+    expect(file.sections[0].body).toBe("```sh\n# install deps\nnpm ci\n```");
+  });
+
+  it("cuts oversized files short and flags them", async () => {
+    const root = mkdtempSync(join(tmpdir(), "dockyard-agents-"));
+    created.push(root);
+    writeFileSync(join(root, "AGENTS.md"), "x".repeat(MAX_FILE_BYTES + 10));
+
+    const [file] = (await readAgentsManifest(root)).files;
+    expect(file.content.length).toBe(MAX_FILE_BYTES);
+    expect(file.truncated).toBe(true);
+  });
+
+  it("skips symlinked directories, so a link back up the tree can't loop", async () => {
+    const root = mkdtempSync(join(tmpdir(), "dockyard-agents-"));
+    created.push(root);
+    mkdirSync(join(root, "pkg"));
+    writeFileSync(join(root, "pkg", "AGENTS.md"), "# Pkg\n");
+    symlinkSync(root, join(root, "pkg", "loop"));
+
+    const manifest = await readAgentsManifest(root);
+    expect(manifest.files.map((f) => f.relativePath)).toEqual(["pkg/AGENTS.md"]);
+    expect(manifest.files[0].truncated).toBeUndefined();
   });
 });

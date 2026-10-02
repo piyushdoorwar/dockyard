@@ -3,71 +3,514 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Dockyard is a local-first visual runtime for Docker containers and repository agent instructions." />
-    <meta name="theme-color" content="#0e7a43" />
-    <title>Dockyard · See what is running</title>
-    <link rel="icon" href="assets/favicon.png" type="image/png" sizes="64x64" />
+    <meta
+      name="description"
+      content="Dockyard is a local-first browser UI for the Docker engine on your machine: containers, Compose stacks, images, volumes, live logs, stats and a terminal, plus a searchable map of every AGENTS.md in your repository. One container, no account, no telemetry."
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#FCFCFC" />
+    <link rel="canonical" href="https://piyushdoorwar.github.io/dockyard/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dockyard" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Dockyard: a local-first visual runtime for Docker" />
+    <meta
+      property="og:description"
+      content="Containers, Compose stacks, images, volumes, live logs, stats and a shell in your browser, plus a map of every AGENTS.md in your repo. Runs locally from one container."
+    />
+    <meta property="og:url" content="https://piyushdoorwar.github.io/dockyard/" />
+    <meta property="og:image" content="https://piyushdoorwar.github.io/dockyard/assets/social-card.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dockyard, a local-first visual runtime for Docker" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Dockyard: a local-first visual runtime for Docker" />
+    <meta
+      name="twitter:description"
+      content="Containers, Compose stacks, images, volumes, live logs, stats and a shell in your browser, plus a map of every AGENTS.md in your repo. Runs locally from one container."
+    />
+    <meta name="twitter:image" content="https://piyushdoorwar.github.io/dockyard/assets/social-card.png" />
+    <meta name="twitter:image:alt" content="Dockyard, a local-first visual runtime for Docker" />
+
+    <title>Dockyard: Local-first Visual Runtime for Docker</title>
+    <link rel="icon" href="assets/dockyard.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    />
     <link rel="stylesheet" href="styles.css" />
+    <script>document.documentElement.classList.add("js");</script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Dockyard",
+        "url": "https://piyushdoorwar.github.io/dockyard/",
+        "image": "https://piyushdoorwar.github.io/dockyard/assets/social-card.png",
+        "description": "A local-first browser UI for the Docker engine on your machine, with live logs, stats, a terminal and a map of every AGENTS.md in your repository.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (Docker)",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": 0,
+          "priceCurrency": "USD"
+        },
+        "installUrl": "https://piyushdoorwar.github.io/dockyard/#get-started",
+        "sameAs": [
+          "https://github.com/piyushdoorwar/dockyard"
+        ],
+        "license": "https://github.com/piyushdoorwar/dockyard/blob/main/LICENSE"
+      }
+    </script>
   </head>
   <body>
-    <a class="skip" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">Skip to content</a>
+
     <header class="topbar">
-      <div class="wrap bar">
-        <a class="brand" href="./"><img src="assets/dockyard.svg" alt="" /><span>Dockyard</span></a>
-        <nav aria-label="Primary"><a href="#features">Features</a><a href="#agents">Agent map</a><a href="#start">Get started</a><a class="github" href="https://github.com/piyushdoorwar/dockyard">GitHub</a></nav>
+      <div class="wrap">
+        <a class="brand" href="./" aria-label="Dockyard home">
+          <img src="assets/dockyard.svg" alt="" width="30" height="30" />
+          <span>Dockyard</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+          <svg class="ic i-menu" aria-hidden="true"><use href="assets/icons.svg#i-menu" /></svg>
+          <svg class="ic i-close" aria-hidden="true"><use href="assets/icons.svg#i-close" /></svg>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Primary">
+          <a href="#get-started">Get started</a>
+          <a href="#features">Features</a>
+          <a href="#agents">Agent map</a>
+          <a href="releases/">Releases</a>
+          <a href="policy/">Privacy</a>
+          <a class="nav-gh" href="https://github.com/piyushdoorwar/dockyard" rel="noreferrer">
+            <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-github" /></svg>
+            <span>GitHub</span>
+          </a>
+        </nav>
       </div>
     </header>
+
     <main id="main">
+      <!-- Hero -->
       <section class="hero">
         <div class="wrap hero-grid">
           <div class="hero-copy">
-            <span class="eyebrow"><i></i> Local-first container runtime</span>
-            <h1>See what is running.<br /><em>Know what it needs.</em></h1>
-            <p>Dockyard turns your local Docker engine into a focused visual workspace—containers, Compose stacks, logs, metrics, terminals, storage, and every <code>AGENTS.md</code> in one place.</p>
-            <div class="actions"><a class="button primary" href="#start">Run Dockyard</a><a class="button secondary" href="#features">Explore features</a></div>
-            <ul class="trust"><li>Local only</li><li>No account</li><li>No telemetry</li><li>Open source</li></ul>
+            <span class="pill"><b>Image</b> Published on ghcr.io for amd64 and arm64</span>
+            <h1>See what is running. <em>Know what it needs.</em></h1>
+            <p class="lede">
+              Dockyard is a local-first browser UI for the Docker engine on your machine. Start one
+              container, open <code>localhost:41739</code>, and your containers, Compose stacks, images,
+              volumes, logs, stats and shells are a click away, next to a map of every
+              <code>AGENTS.md</code> in your repository.
+            </p>
+            <div class="actions">
+              <a class="btn btn-primary" href="#get-started">
+                <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-box" /></svg>
+                <span>Run with Docker</span>
+              </a>
+              <a class="btn btn-secondary" href="https://github.com/piyushdoorwar/dockyard" rel="noreferrer">
+                <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-github" /></svg>
+                <span>View on GitHub</span>
+              </a>
+            </div>
+            <ul class="checks">
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg>Local only</li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg>No account</li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg>No telemetry</li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg>Open source</li>
+            </ul>
           </div>
-          <div class="product" aria-label="Dockyard product preview">
-            <div class="windowbar"><span></span><span></span><span></span><code>localhost:41739</code></div>
-            <div class="app-shell">
-              <aside>
-                <div class="mini-brand"><img src="assets/dockyard.svg" alt="" />Dockyard</div>
-                <small>Workspace</small>
-                <b>▦ Dashboard</b><span>▣ Containers</span><span>⌘ Stacks</span><span>◫ Images</span><span>◉ Volumes</span><span>⑂ Agents</span>
+
+          <!-- Product mock, drawn in HTML and CSS -->
+          <div class="mock" id="mock" role="img" aria-label="Dockyard in a browser: the containers view with status, published ports and CPU use for five containers">
+            <div class="mock-chrome" aria-hidden="true">
+              <div class="mock-dots"><i></i><i></i><i></i></div>
+              <div class="mock-address">
+                <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-globe" /></svg>
+                localhost:41739/containers
+              </div>
+            </div>
+            <div class="mock-body" aria-hidden="true">
+              <aside class="mock-side">
+                <div class="mock-brand"><img src="assets/dockyard.svg" alt="" width="20" height="20" />Dockyard</div>
+                <div class="mock-label">Runtime</div>
+                <ul class="side-nav">
+                  <li><svg class="ic"><use href="assets/icons.svg#i-grid" /></svg>Dashboard</li>
+                  <li class="sel"><svg class="ic"><use href="assets/icons.svg#i-box" /></svg>Containers<span class="count" id="navCount">5</span></li>
+                  <li><svg class="ic"><use href="assets/icons.svg#i-layers" /></svg>Stacks<span class="count">2</span></li>
+                  <li><svg class="ic"><use href="assets/icons.svg#i-disc" /></svg>Images<span class="count">19</span></li>
+                  <li><svg class="ic"><use href="assets/icons.svg#i-database" /></svg>Volumes<span class="count">7</span></li>
+                </ul>
+                <div class="mock-label">Repository</div>
+                <ul class="side-nav">
+                  <li><svg class="ic"><use href="assets/icons.svg#i-map" /></svg>Agents<span class="count">4</span></li>
+                </ul>
+                <div class="engine"><i class="dot on"></i><span><b>Engine</b> 27.3.1</span></div>
               </aside>
-              <div class="app-main">
-                <div class="app-head"><b>Runtime overview</b><span><i></i> Engine running</span></div>
-                <div class="cards"><article><small>Containers</small><strong>12</strong><span>8 running · 4 stopped</span></article><article><small>Images</small><strong>19</strong><span>4.8 GB</span></article><article><small>Volumes</small><strong>7</strong><span>11.2 GB</span></article></div>
-                <div class="runtime"><div class="runtime-head"><b>Live containers</b><span>CPU &amp; memory</span></div><div class="row"><i class="on"></i><b>api-gateway</b><code>0.8%</code><div class="meter"><i style="width:32%"></i></div></div><div class="row"><i class="on"></i><b>postgres</b><code>2.1%</code><div class="meter"><i style="width:54%"></i></div></div><div class="row"><i></i><b>worker</b><code>stopped</code><div class="meter"><i style="width:0"></i></div></div></div>
+
+              <div class="mock-main">
+                <div class="mock-head">
+                  <h3>Containers</h3>
+                  <span class="sub" id="mockSummary">4 running</span>
+                  <div class="mock-search"><svg class="ic"><use href="assets/icons.svg#i-search" /></svg>Filter by name, image</div>
+                </div>
+
+                <div class="tiles">
+                  <div class="tile"><small>Running</small><strong id="tileRunning">4</strong><span>of 5 containers</span></div>
+                  <div class="tile"><small>Stopped</small><strong id="tileStopped">1</strong><span>exited</span></div>
+                  <div class="tile"><small>Images</small><strong>19</strong><span>4.8 GB</span></div>
+                  <div class="tile"><small>Disk used</small><strong>16.4 GB</strong><span>3.1 GB reclaimable</span></div>
+                </div>
+
+                <div class="ctable">
+                  <div class="crow head"><span>Name</span><span>State</span><span class="port">Ports</span><span>CPU</span><span></span></div>
+                  <div class="crow" data-cpu="1.4">
+                    <div class="name"><b>shop-web-1</b><small>nginx:1.27-alpine</small></div>
+                    <span class="status running">running</span>
+                    <span class="port">8080:80</span>
+                    <div class="meter"><span class="bar"><i></i></span><code>1.4%</code></div>
+                    <div class="acts">
+                      <button class="act" type="button" tabindex="-1" data-toggle><svg class="ic i-stop"><use href="assets/icons.svg#i-stop" /></svg><svg class="ic i-play"><use href="assets/icons.svg#i-play" /></svg></button>
+                      <button class="act" type="button" tabindex="-1" data-restart><svg class="ic"><use href="assets/icons.svg#i-restart" /></svg></button>
+                    </div>
+                  </div>
+                  <div class="crow" data-cpu="6.2">
+                    <div class="name"><b>shop-api-1</b><small>shop-api:dev</small></div>
+                    <span class="status running">running</span>
+                    <span class="port">3000:3000</span>
+                    <div class="meter"><span class="bar"><i></i></span><code>6.2%</code></div>
+                    <div class="acts">
+                      <button class="act" type="button" tabindex="-1" data-toggle><svg class="ic i-stop"><use href="assets/icons.svg#i-stop" /></svg><svg class="ic i-play"><use href="assets/icons.svg#i-play" /></svg></button>
+                      <button class="act" type="button" tabindex="-1" data-restart><svg class="ic"><use href="assets/icons.svg#i-restart" /></svg></button>
+                    </div>
+                  </div>
+                  <div class="crow" data-cpu="2.8">
+                    <div class="name"><b>shop-db-1</b><small>postgres:16</small></div>
+                    <span class="status running">running</span>
+                    <span class="port">5432:5432</span>
+                    <div class="meter"><span class="bar"><i></i></span><code>2.8%</code></div>
+                    <div class="acts">
+                      <button class="act" type="button" tabindex="-1" data-toggle><svg class="ic i-stop"><use href="assets/icons.svg#i-stop" /></svg><svg class="ic i-play"><use href="assets/icons.svg#i-play" /></svg></button>
+                      <button class="act" type="button" tabindex="-1" data-restart><svg class="ic"><use href="assets/icons.svg#i-restart" /></svg></button>
+                    </div>
+                  </div>
+                  <div class="crow stopped" data-cpu="3.6">
+                    <div class="name"><b>shop-worker-1</b><small>shop-worker:dev</small></div>
+                    <span class="status">exited</span>
+                    <span class="port none">none</span>
+                    <div class="meter"><span class="bar"><i></i></span><code>0%</code></div>
+                    <div class="acts">
+                      <button class="act" type="button" tabindex="-1" data-toggle><svg class="ic i-stop"><use href="assets/icons.svg#i-stop" /></svg><svg class="ic i-play"><use href="assets/icons.svg#i-play" /></svg></button>
+                      <button class="act" type="button" tabindex="-1" data-restart><svg class="ic"><use href="assets/icons.svg#i-restart" /></svg></button>
+                    </div>
+                  </div>
+                  <div class="crow" data-cpu="0.6">
+                    <div class="name"><b>dockyard</b><small>ghcr.io/piyushdoorwar/dockyard</small></div>
+                    <span class="status running">running</span>
+                    <span class="port">41739:41739</span>
+                    <div class="meter"><span class="bar"><i></i></span><code>0.6%</code></div>
+                    <div class="acts">
+                      <span class="lock" title="Dockyard does not stop or remove its own container"><svg class="ic"><use href="assets/icons.svg#i-lock" /></svg>self</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <section class="section white" id="features">
-        <div class="wrap"><div class="section-copy"><span class="kicker">The whole local runtime</span><h2>Everything you reach for, without leaving the browser.</h2><p>Day-to-day controls are close at hand, while destructive actions stay explicit and Dockyard protects its own runtime.</p></div>
-          <div class="feature-grid">
-            <article><span class="num">01</span><h3>Containers</h3><p>Start, stop, restart, inspect, remove, and filter every container on your engine.</p></article>
-            <article><span class="num">02</span><h3>Live diagnostics</h3><p>Stream logs and CPU, memory, network, disk, and process metrics in real time.</p></article>
-            <article><span class="num">03</span><h3>Terminal</h3><p>Open an interactive shell directly inside a running container with resize support.</p></article>
-            <article><span class="num">04</span><h3>Compose stacks</h3><p>See services as projects and control a whole stack without losing container detail.</p></article>
-            <article><span class="num">05</span><h3>Images &amp; volumes</h3><p>Pull and prune images, inspect disk use, and safely manage persistent volumes.</p></article>
-            <article><span class="num">06</span><h3>Engine cleanup</h3><p>Reclaim stopped containers, dangling images, networks, and build cache in one reviewable action.</p></article>
+
+      <!-- Get started -->
+      <section class="section tint" id="get-started">
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <span class="eyebrow">Get started</span>
+            <h2>One container. Your engine. Your browser.</h2>
+            <p>
+              Dockyard ships as a single multi-arch image. Give it the Docker socket and, optionally,
+              a read-only view of a repository, and it does the rest.
+            </p>
+          </div>
+
+          <div class="steps">
+            <div class="step" data-reveal>
+              <h3>Start Dockyard from your repository</h3>
+              <p>Run this in the repository whose <code>AGENTS.md</code> files you want mapped. It is mounted read-only at <code>/workspace</code>, and the port is bound to your machine only. Docker Desktop on macOS and Windows uses the same command.</p>
+              <div class="cmd">
+                <pre><code><span class="prompt">$ </span>docker run -d --name dockyard --restart unless-stopped -p 127.0.0.1:41739:41739 -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD:/workspace:ro" ghcr.io/piyushdoorwar/dockyard:latest</code></pre>
+                <button class="copy-btn" type="button" data-copy="docker run -d --name dockyard --restart unless-stopped -p 127.0.0.1:41739:41739 -v /var/run/docker.sock:/var/run/docker.sock -v &quot;$PWD:/workspace:ro&quot; ghcr.io/piyushdoorwar/dockyard:latest" aria-label="Copy docker run command">
+                  <svg class="ic i-copy" aria-hidden="true"><use href="assets/icons.svg#i-copy" /></svg>
+                  <svg class="ic i-check" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="step" data-reveal style="--d: 0.06s">
+              <h3>Open it in your browser</h3>
+              <p>Go to <a href="http://localhost:41739" rel="noreferrer">http://localhost:41739</a>. The dashboard shows the engine, what is running and how much disk Docker is using.</p>
+            </div>
+            <div class="step" data-reveal style="--d: 0.12s">
+              <h3>Work with what is running</h3>
+              <p>Start, stop and restart containers or whole Compose stacks, follow logs, watch stats, open a shell, and clean up what you no longer need.</p>
+            </div>
+          </div>
+
+          <div class="notes">
+            <div class="note" data-reveal>
+              <h3><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-history" /></svg>Updating</h3>
+              <p>Pull the newest image, remove the container and run the same command again. Dockyard keeps no state of its own, so recreating it loses nothing. Pin a version with <code>:1.2.3</code> instead of <code>:latest</code>.</p>
+              <div class="cmd">
+                <pre><code><span class="prompt">$ </span>docker pull ghcr.io/piyushdoorwar/dockyard:latest
+<span class="prompt">$ </span>docker rm -f dockyard</code></pre>
+                <button class="copy-btn" type="button" data-copy="docker pull ghcr.io/piyushdoorwar/dockyard:latest&#10;docker rm -f dockyard" aria-label="Copy update commands">
+                  <svg class="ic i-copy" aria-hidden="true"><use href="assets/icons.svg#i-copy" /></svg>
+                  <svg class="ic i-check" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div class="note" data-reveal style="--d: 0.06s">
+              <h3><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-shield" /></svg>What the socket mount means</h3>
+              <p>
+                Access to <code>/var/run/docker.sock</code> is equivalent to root on the host, so Dockyard
+                has no login and is built to be reached only from your machine. It answers loopback
+                requests only, checks <code>Host</code> and <code>Origin</code>, and needs a custom header for
+                every change. Keep the port published on <code>127.0.0.1</code>, never on a public interface.
+              </p>
+            </div>
           </div>
         </div>
       </section>
-      <section class="section agent-band" id="agents">
-        <div class="wrap agent-grid">
-          <div class="section-copy"><span class="kicker">Agent-aware</span><h2>One map for every instruction file.</h2><p>Dockyard recursively discovers `AGENTS.md` files, preserves their repository context, and combines their headings into a searchable visual hierarchy.</p><ul><li>Repository-wide recursive discovery</li><li>Generated and vendor folders ignored</li><li>Search across paths and content</li><li>Read-only workspace access</li></ul></div>
-          <div class="agent-demo"><div class="trunk"></div><article><header><span>⌘</span><div><b>AGENTS.md</b><small>3 sections</small></div></header><p><i>H1</i> Project instructions</p><pre>Use the workspace conventions…</pre></article><article><header><span>⌘</span><div><b>packages/api/AGENTS.md</b><small>2 sections</small></div></header><p><i>H2</i> Testing</p><pre>Run integration tests against…</pre></article></div>
+
+      <!-- Features -->
+      <section class="section" id="features">
+        <div class="wrap">
+          <div class="section-head" data-reveal>
+            <span class="eyebrow">Features</span>
+            <h2>The whole local runtime, without leaving the browser.</h2>
+            <p>Everyday controls stay close at hand. Destructive actions stay explicit, and Dockyard never turns itself off.</p>
+          </div>
+
+          <div class="features">
+            <article class="card" data-reveal>
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-grid" /></svg></div>
+              <h3>Engine dashboard</h3>
+              <p>Engine version, CPUs, memory and container counts at a glance, with disk use split across images, containers, volumes and build cache.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.04s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-box" /></svg></div>
+              <h3>Containers</h3>
+              <p>Start, stop, restart and remove. Filter by name, image or stack, show only what is running, and open published ports as links.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.08s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-logs" /></svg></div>
+              <h3>Live logs</h3>
+              <p>Stream stdout and stderr as they are written, with timestamps, starting from the recent tail so you have context straight away.</p>
+            </article>
+            <article class="card" data-reveal>
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-activity" /></svg></div>
+              <h3>Live stats</h3>
+              <p>CPU, memory, network and disk I/O drawn as sparklines that update every second, plus the number of processes inside.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.04s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-terminal" /></svg></div>
+              <h3>Interactive terminal</h3>
+              <p>A real shell inside any running container, in a full terminal emulator that resizes with the window.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.08s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-braces" /></svg></div>
+              <h3>Inspect</h3>
+              <p>The complete inspect document for a container, from mounts and networks to environment and labels, without a trip to the terminal.</p>
+            </article>
+            <article class="card" data-reveal>
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-layers" /></svg></div>
+              <h3>Compose stacks</h3>
+              <p>Containers grouped by Compose project, each marked running, partial or stopped. Start, stop, restart or remove a whole stack at once.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.04s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-disc" /></svg></div>
+              <h3>Images</h3>
+              <p>Pull by name, remove what you do not need, prune dangling or unused images, and see each one's size and how many containers use it.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.08s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-database" /></svg></div>
+              <h3>Volumes</h3>
+              <p>Size, driver, owning stack and how many containers use each volume. Remove one, or prune every unused volume in one step.</p>
+            </article>
+            <article class="card" data-reveal>
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-eraser" /></svg></div>
+              <h3>Engine cleanup</h3>
+              <p>Reclaim stopped containers, dangling images, unused networks and build cache in one reviewed action, and see how much space came back.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.04s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-map" /></svg></div>
+              <h3>Agent map</h3>
+              <p>Every <code>AGENTS.md</code> in the mounted repository, found recursively and shown as one searchable outline of headings.</p>
+            </article>
+            <article class="card" data-reveal style="--d: 0.08s">
+              <div class="icon"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-lock" /></svg></div>
+              <h3>Protects itself</h3>
+              <p>Dockyard recognises its own container by label and refuses to stop, restart or remove it, so you cannot pull the rug from under the UI.</p>
+            </article>
+          </div>
         </div>
       </section>
-      <section class="section white" id="start"><div class="wrap start"><span class="kicker">Get started</span><h2>Your engine, in view.</h2><p>Build the image, mount the Docker socket and your repository, then open Dockyard on localhost.</p><div class="command"><code>docker run --rm --name dockyard -p 127.0.0.1:41739:41739 -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD:/workspace:ro" dockyard</code><button type="button" data-copy>Copy</button></div><small>Build locally first with <code>docker build -t dockyard .</code></small></div></section>
+
+      <!-- Agent map -->
+      <section class="section tint" id="agents">
+        <div class="wrap split">
+          <div class="section-head" data-reveal>
+            <span class="eyebrow">Agent-aware</span>
+            <h2>One map for every instruction file.</h2>
+            <p>
+              Coding agents read <code>AGENTS.md</code> files spread through a repository. Dockyard finds
+              all of them and lays out their headings as a single outline, so you can see which rules
+              apply where before an agent does.
+            </p>
+            <ul class="bullets">
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>Recursive discovery from the repository root, with each file kept in its folder context.</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>Skips <code>.git</code>, <code>node_modules</code>, build output and other generated folders.</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>Search across paths, headings and content at once.</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>Read-only: the repository is mounted with <code>:ro</code> and never written to.</span></li>
+            </ul>
+          </div>
+
+          <div class="agentcard" id="agentMock" data-reveal style="--d: 0.08s">
+            <div class="agentcard-head">
+              <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-map" /></svg>
+              <b>Agents</b>
+              <span class="meta">/workspace</span>
+            </div>
+            <label class="agent-search">
+              <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-search" /></svg>
+              <input type="search" id="agentFilter" aria-label="Filter the example agent map" placeholder="Try &quot;test&quot; or &quot;api&quot;" autocomplete="off" />
+            </label>
+            <ul class="agent-map" id="agentList">
+              <li class="agent-file">
+                <header><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-file" /></svg><b>AGENTS.md</b><small>3 sections</small></header>
+                <ul>
+                  <li><span class="lvl">H1</span><span>Project conventions</span></li>
+                  <li><span class="lvl">H2</span><span>Commit messages</span></li>
+                  <li><span class="lvl">H2</span><span>Running the test suite</span></li>
+                </ul>
+              </li>
+              <li class="agent-file">
+                <header><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-file" /></svg><b>services/api/AGENTS.md</b><small>3 sections</small></header>
+                <ul>
+                  <li><span class="lvl">H1</span><span>API service</span></li>
+                  <li><span class="lvl">H2</span><span>Database migrations</span></li>
+                  <li class="l3"><span class="lvl">H3</span><span>Integration tests need Postgres</span></li>
+                </ul>
+              </li>
+              <li class="agent-file">
+                <header><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-file" /></svg><b>web/AGENTS.md</b><small>2 sections</small></header>
+                <ul>
+                  <li><span class="lvl">H1</span><span>Web client</span></li>
+                  <li><span class="lvl">H2</span><span>Component style and tests</span></li>
+                </ul>
+              </li>
+              <li class="agent-file">
+                <header><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-file" /></svg><b>infra/AGENTS.md</b><small>2 sections</small></header>
+                <ul>
+                  <li><span class="lvl">H1</span><span>Infrastructure</span></li>
+                  <li><span class="lvl">H2</span><span>Never apply to production</span></li>
+                </ul>
+              </li>
+              <li class="agent-empty hidden" id="agentEmpty">No headings match. Try a broader filter.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live view -->
+      <section class="section" id="live">
+        <div class="wrap split">
+          <div class="section-head" data-reveal>
+            <span class="eyebrow">Live, not polled</span>
+            <h2>Logs, stats and a shell in one place.</h2>
+            <p>
+              Open any container to follow its output as it happens, watch its resources move, and drop
+              into a terminal without copying an ID into another window.
+            </p>
+            <ul class="bullets">
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>Logs and stats stream over WebSockets straight from the Docker engine.</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>stderr is marked apart from stdout, and every line carries its timestamp.</span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-check" /></svg><span>The terminal is a real TTY: colours, tab completion and resizing all work.</span></li>
+            </ul>
+          </div>
+
+          <div class="term" data-reveal style="--d: 0.08s">
+            <div class="term-head">
+              <div class="mock-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span>shop-api-1</span>
+              <div class="term-tabs" aria-hidden="true"><span class="on">Logs</span><span>Inspect</span><span>Terminal</span><span>Stats</span></div>
+            </div>
+            <div class="term-stats" aria-hidden="true">
+              <div><small>CPU</small><b>6.2%</b><svg viewBox="0 0 100 22" preserveAspectRatio="none"><path d="M0 16 L10 14 L20 15 L30 9 L40 12 L50 6 L60 10 L70 8 L80 13 L90 7 L100 9" /></svg></div>
+              <div><small>Memory</small><b>142 MB</b><svg viewBox="0 0 100 22" preserveAspectRatio="none"><path d="M0 14 L10 14 L20 13 L30 13 L40 12 L50 12 L60 11 L70 11 L80 11 L90 10 L100 10" /></svg></div>
+              <div><small>Network</small><b>38 KB/s</b><svg viewBox="0 0 100 22" preserveAspectRatio="none"><path d="M0 18 L10 12 L20 17 L30 15 L40 5 L50 16 L60 14 L70 18 L80 9 L90 15 L100 12" /></svg></div>
+            </div>
+<pre aria-label="Example container log output"><span class="d">10:42:07.118</span> <span class="w">INFO</span>  listening on :3000
+<span class="d">10:42:07.402</span> <span class="w">INFO</span>  connected to postgres at shop-db-1:5432
+<span class="d">10:42:11.930</span> <span class="g">GET</span>   /health <span class="g">200</span> <span class="d">2 ms</span>
+<span class="d">10:42:15.271</span> <span class="g">GET</span>   /products?page=2 <span class="g">200</span> <span class="d">18 ms</span>
+<span class="d">10:42:15.844</span> <span class="g">POST</span>  /cart/items <span class="g">201</span> <span class="d">31 ms</span>
+<span class="d">10:42:16.007</span> <span class="y">WARN</span>  slow query: 412 ms on orders
+<span class="d">10:42:19.563</span> <span class="r">ERROR</span> payment webhook rejected: bad signature
+<span class="d">10:42:21.190</span> <span class="g">GET</span>   /products/41 <span class="g">200</span> <span class="d">9 ms</span>
+<span class="d">streaming, tail 500</span></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="section tint">
+        <div class="wrap">
+          <div class="cta" data-reveal>
+            <div>
+              <h2>Keep an eye on your local runtime.</h2>
+              <p>Free and open source under the MIT license. Runs anywhere Docker does.</p>
+            </div>
+            <div class="actions">
+              <a class="btn btn-primary" href="#get-started">
+                <span>Get started</span>
+                <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-arrow" /></svg>
+              </a>
+              <a class="btn btn-secondary" href="releases/">
+                <svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-tag" /></svg>
+                <span>Releases</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
-    <footer><div class="wrap"><a class="brand" href="./"><img src="assets/dockyard.svg" alt="" /><span>Dockyard</span></a><p>Local containers, clearly.</p></div></footer>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div>
+          <a class="brand" href="./">
+            <img src="assets/dockyard.svg" alt="" width="26" height="26" />
+            <span>Dockyard</span>
+          </a>
+          <p>A local-first visual runtime for Docker and the agent instructions in your repository.</p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="releases/"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-tag" /></svg>Releases</a>
+          <a href="policy/"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-shield" /></svg>Privacy</a>
+          <a href="https://github.com/piyushdoorwar/dockyard" rel="noreferrer"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-github" /></svg>GitHub</a>
+          <a href="https://github.com/piyushdoorwar/dockyard/pkgs/container/dockyard" rel="noreferrer"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-box" /></svg>Image</a>
+          <a href="https://github.com/piyushdoorwar/dockyard/issues" rel="noreferrer"><svg class="ic" aria-hidden="true"><use href="assets/icons.svg#i-mail" /></svg>Support</a>
+        </nav>
+      </div>
+    </footer>
+
     <script src="app.js"></script>
   </body>
 </html>

@@ -227,17 +227,36 @@ describe("images", () => {
 });
 
 describe("volumes", () => {
-  it("lists volumes with sizes from disk usage", async () => {
-    const { asDocker } = fakeDocker({
+  it("lists volumes with sizes from volume-only disk usage", async () => {
+    const dial = vi.fn((_opts, cb) => cb(null, { Volumes: [{ Name: "pgdata", UsageData: { Size: 2048, RefCount: 1 } }] }));
+    const { asDocker, docker } = fakeDocker({
       listVolumes: vi.fn().mockResolvedValue({
         Volumes: [{ Name: "pgdata", Driver: "local", Mountpoint: "/v", Labels: { "com.docker.compose.project": "sample" } }],
       }),
-      df: vi.fn().mockResolvedValue({ Volumes: [{ Name: "pgdata", UsageData: { Size: 2048, RefCount: 1 } }] }),
+      modem: { followProgress: vi.fn(), dial },
     });
     app = await appWith(asDocker);
     expect((await app.inject({ url: "/api/volumes" })).json()).toMatchObject([
       { name: "pgdata", size: 2048, refCount: 1, project: "sample" },
     ]);
+    // Asks only for volumes rather than sizing every image and container.
+    expect(dial).toHaveBeenCalledWith(
+      expect.objectContaining({ path: "/system/df?", options: { type: ["volume"] } }),
+      expect.any(Function),
+    );
+    expect(docker.df).not.toHaveBeenCalled();
+  });
+
+  it("answers 503 when the Docker socket isn't there", async () => {
+    const unreachable = Object.assign(new Error("connect ENOENT /var/run/docker.sock"), {
+      code: "ENOENT",
+      syscall: "connect",
+    });
+    const { asDocker } = fakeDocker({ listVolumes: vi.fn().mockRejectedValue(unreachable) });
+    app = await appWith(asDocker);
+    const res = await app.inject({ url: "/api/volumes" });
+    expect(res.statusCode).toBe(503);
+    expect(res.json().error).toMatch(/Docker engine/);
   });
 
   it("surfaces Docker's 'volume in use' conflict", async () => {

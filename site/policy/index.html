@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Dockyard privacy policy. Dockyard runs locally, talks only to your own Docker engine, stores nothing and sends no telemetry. This website uses no analytics and no cookies." />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#FCFCFC" />
+    <link rel="canonical" href="https://piyushdoorwar.github.io/dockyard/policy/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dockyard" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Dockyard privacy policy" />
+    <meta property="og:description" content="Dockyard runs locally, talks only to your own Docker engine, stores nothing and sends no telemetry." />
+    <meta property="og:url" content="https://piyushdoorwar.github.io/dockyard/policy/" />
+    <meta property="og:image" content="https://piyushdoorwar.github.io/dockyard/assets/social-card.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dockyard, a local-first visual runtime for Docker" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Dockyard privacy policy" />
+    <meta name="twitter:description" content="Dockyard runs locally, talks only to your own Docker engine, stores nothing and sends no telemetry." />
+    <meta name="twitter:image" content="https://piyushdoorwar.github.io/dockyard/assets/social-card.png" />
+    <meta name="twitter:image:alt" content="Dockyard, a local-first visual runtime for Docker" />
+
+    <title>Privacy Policy | Dockyard</title>
+    <link rel="icon" href="../assets/dockyard.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="wrap">
+        <a class="brand" href="../" aria-label="Dockyard home">
+          <img src="../assets/dockyard.svg" alt="" width="30" height="30" />
+          <span>Dockyard</span>
+        </a>
+        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+          <svg class="ic i-menu" aria-hidden="true"><use href="../assets/icons.svg#i-menu" /></svg>
+          <svg class="ic i-close" aria-hidden="true"><use href="../assets/icons.svg#i-close" /></svg>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Primary">
+          <a href="../#get-started">Get started</a>
+          <a href="../#features">Features</a>
+          <a href="../#agents">Agent map</a>
+          <a href="../releases/">Releases</a>
+          <a href="./" aria-current="page">Privacy</a>
+          <a class="nav-gh" href="https://github.com/piyushdoorwar/dockyard" rel="noreferrer">
+            <svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-github" /></svg>
+            <span>GitHub</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <div class="wrap narrow">
+          <span class="eyebrow">Privacy</span>
+          <h1>Privacy policy</h1>
+          <p>Dockyard runs on your machine and talks only to your own Docker engine. There is no account, no cloud service and no telemetry, and it keeps no data of its own.</p>
+          <p class="updated">Last updated 2 October 2026</p>
+        </div>
+      </section>
+
+      <div class="page-body">
+        <div class="wrap narrow">
+          <section class="prose-card callout">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-shield" /></svg>The short version</h2>
+            <ul>
+              <li>The Dockyard app collects nothing about you and phones home to no one.</li>
+              <li>It talks to the Docker engine on your machine through the socket you mount, and to nothing else.</li>
+              <li>It reads <code>AGENTS.md</code> files from the repository you mount, read-only, and never writes to it.</li>
+              <li>It stores nothing: no database, no settings file, no history.</li>
+              <li>This website uses no analytics and sets no cookies.</li>
+            </ul>
+          </section>
+
+          <section class="prose-card">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-box" /></svg>The Dockyard app</h2>
+            <p>
+              Dockyard is a web app you run yourself from a Docker container. The container serves the
+              interface to your browser at <code>http://localhost:41739</code>. The recommended command
+              publishes that port on <code>127.0.0.1</code> only, so the app is reachable from your own
+              machine and nowhere else.
+            </p>
+            <p>The app contains no analytics, crash reporting, update checks or usage tracking, and it does not require or offer an account.</p>
+          </section>
+
+          <section class="prose-card">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-file" /></svg>What the app reads and stores</h2>
+            <ul>
+              <li><strong>Your Docker engine.</strong> Through the mounted <code>/var/run/docker.sock</code>, Dockyard lists and controls containers, Compose stacks, images and volumes, and streams logs, stats and terminal sessions. That information is shown in your browser and is not saved or sent anywhere.</li>
+              <li><strong>Your repository.</strong> The folder you mount at <code>/workspace</code> is mounted read-only. Dockyard searches it for <code>AGENTS.md</code> files when you open the agent map and shows their contents. It never modifies them.</li>
+              <li><strong>Nothing else.</strong> Dockyard has no database and writes no state of its own, which is why removing and recreating the container loses nothing.</li>
+            </ul>
+          </section>
+
+          <section class="prose-card">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-lock" /></svg>Security of the Docker socket</h2>
+            <p>
+              Access to the Docker socket is equivalent to root access on the host. Dockyard therefore has
+              no login and is designed to be used only from the same machine: it accepts requests
+              addressed to <code>localhost</code> only, rejects requests whose <code>Origin</code> does not
+              match, and requires a custom header on every state-changing request so other websites cannot
+              act on your behalf.
+            </p>
+            <p>Keep the published port bound to <code>127.0.0.1</code>. Do not expose it on a public or shared network interface.</p>
+          </section>
+
+          <section class="prose-card">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-globe" /></svg>Network requests</h2>
+            <p>The Dockyard app itself makes no requests to the internet. The only outside traffic involved is traffic you start yourself:</p>
+            <ul>
+              <li>Pulling the Dockyard image from <code>ghcr.io</code>, which is operated by GitHub.</li>
+              <li>Pulling an image from the Images page, which your Docker engine fetches from the registry you name.</li>
+            </ul>
+          </section>
+
+          <section class="prose-card">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-eye-off" /></svg>This website</h2>
+            <p>
+              This site is static and hosted on GitHub Pages. It uses no analytics, sets no cookies and
+              does not use local storage. Fonts are loaded from Google Fonts.
+            </p>
+            <p>
+              GitHub and Google may process standard request data such as your IP address when they
+              deliver this site and its fonts to you, under their own privacy policies. Pulling the
+              container image from <code>ghcr.io</code> is handled by GitHub in the same way.
+            </p>
+          </section>
+
+          <section class="prose-card">
+            <h2><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-mail" /></svg>Contact</h2>
+            <p>
+              Questions about this policy, or found something that does not match it? Open an issue on
+              <a href="https://github.com/piyushdoorwar/dockyard/issues" rel="noreferrer">GitHub</a> or email
+              <a href="mailto:piyushdoorwar+dockyard@gmail.com">piyushdoorwar+dockyard@gmail.com</a>.
+            </p>
+            <p>If this policy changes, the new version will be published on this page with an updated date.</p>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div>
+          <a class="brand" href="../">
+            <img src="../assets/dockyard.svg" alt="" width="26" height="26" />
+            <span>Dockyard</span>
+          </a>
+          <p>A local-first visual runtime for Docker and the agent instructions in your repository.</p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <a href="../releases/"><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-tag" /></svg>Releases</a>
+          <a href="./"><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-shield" /></svg>Privacy</a>
+          <a href="https://github.com/piyushdoorwar/dockyard" rel="noreferrer"><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-github" /></svg>GitHub</a>
+          <a href="https://github.com/piyushdoorwar/dockyard/pkgs/container/dockyard" rel="noreferrer"><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-box" /></svg>Image</a>
+          <a href="https://github.com/piyushdoorwar/dockyard/issues" rel="noreferrer"><svg class="ic" aria-hidden="true"><use href="../assets/icons.svg#i-mail" /></svg>Support</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="../app.js"></script>
+  </body>
+</html>

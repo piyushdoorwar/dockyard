@@ -133,7 +133,6 @@ export type ExecClientMessage =
   | { type: "input"; data: string }
   | { type: "resize"; cols: number; rows: number };
 
-/** Header every state-changing request must carry (see server/src/security.ts). */
 export interface AgentSection {
   level: number;
   title: string;
@@ -146,6 +145,8 @@ export interface AgentFile {
   directory: string;
   content: string;
   sections: AgentSection[];
+  /** Set when the file was too large and only its beginning is included. */
+  truncated?: boolean;
 }
 
 export interface AgentsManifest {
@@ -154,4 +155,5 @@ export interface AgentsManifest {
   scannedAt: string;
 }
 
+/** Header every state-changing request must carry (see server/src/security.ts). */
 export const CSRF_HEADER = "x-dockyard";

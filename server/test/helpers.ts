@@ -57,7 +57,8 @@ export function fakeDocker(over: Record<string, unknown> = {}) {
     df: vi.fn().mockResolvedValue({ LayersSize: 0, Images: [], Containers: [], Volumes: [], BuildCache: [] }),
     info: vi.fn(),
     pull: vi.fn(),
-    modem: { followProgress: vi.fn() },
+    // Raw Engine API calls; answers the volume-only disk-usage query by default.
+    modem: { followProgress: vi.fn(), dial: vi.fn((_opts, cb) => cb(null, { Volumes: [] })) },
     pruneContainers: vi.fn().mockResolvedValue({ ContainersDeleted: [], SpaceReclaimed: 0 }),
     pruneImages: vi.fn().mockResolvedValue({ ImagesDeleted: [], SpaceReclaimed: 0 }),
     pruneNetworks: vi.fn().mockResolvedValue({ NetworksDeleted: [] }),

@@ -1,9 +1,9 @@
-import { Column } from "primereact/column";
-import { DataTable } from "primereact/datatable";
+import { Download, Eraser, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ImageSummary } from "../../../shared/types";
 import { Button, IconButton } from "../components/Button";
 import { useConfirm } from "../components/Confirm";
+import { type Column, DataTable } from "../components/DataTable";
 import { Modal } from "../components/Modal";
 import { ErrorBanner, NoItemFound, PageHeader } from "../components/Page";
 import { SearchBar, Toggle } from "../components/SearchBar";
@@ -32,7 +32,7 @@ function PullDialog({ onPull, onClose }: { onPull: (image: string) => Promise<vo
           <Button variant="cancel" onClick={onClose} disabled={pulling}>
             Cancel
           </Button>
-          <Button icon="pi-download" onClick={submit} disabled={!image.trim() || pulling}>
+          <Button icon={Download} onClick={submit} disabled={!image.trim() || pulling}>
             {pulling ? "Pulling…" : "Pull"}
           </Button>
         </>
@@ -44,7 +44,7 @@ function PullDialog({ onPull, onClose }: { onPull: (image: string) => Promise<vo
           void submit();
         }}
       >
-        <label className="mb-2 block text-13 text-grey" htmlFor="pull-image">
+        <label className="label" htmlFor="pull-image">
           Image name, e.g. <code>redis:7</code> or <code>mcr.microsoft.com/mssql/server:2022-latest</code>
         </label>
         <input
@@ -54,9 +54,11 @@ function PullDialog({ onPull, onClose }: { onPull: (image: string) => Promise<vo
           onChange={(e) => setImage(e.target.value)}
           disabled={pulling}
           placeholder="repository:tag"
-          className="h-10 w-full rounded-md border border-line px-3 text-13 text-body placeholder:text-muted focus:border-primary focus:outline-none"
+          className="input font-mono"
         />
-        <p className="mt-2 text-xs text-muted">Public registries only — private images (e.g. ghcr.io/siuk) need `docker login` in a terminal.</p>
+        <p className="mt-2 text-12 text-muted">
+          Private registries work once you have run <code>docker login</code> on the host.
+        </p>
       </form>
     </Modal>
   );
@@ -116,6 +118,21 @@ export function ImagesPage() {
     if (ok) await run(`${img.id}:remove`, () => api.removeImage(img.id), `${name} deleted`);
   };
 
+  const columns: Column<ImageSummary>[] = [
+    { key: "repository", header: "Name", minWidth: 180, sortValue: (i) => i.repository, render: (i) => <span className="font-medium [overflow-wrap:anywhere] text-ink">{i.repository}</span> },
+    { key: "tag", header: "Tag", sortValue: (i) => i.tag, render: (i) => <span className="text-13">{i.tag}</span> },
+    { key: "id", header: "Image ID", render: (i) => <code className="text-12 text-grey">{i.shortId}</code> },
+    { key: "created", header: "Created", sortValue: (i) => i.created, render: (i) => <span className="text-13 whitespace-nowrap">{timeAgo(i.created)}</span> },
+    { key: "size", header: "Size", sortValue: (i) => i.size, render: (i) => <span className="text-13 whitespace-nowrap">{formatBytes(i.size)}</span> },
+    { key: "status", header: "Status", sortValue: (i) => i.containers, render: (i) => <ImageStatus img={i} /> },
+    {
+      key: "actions",
+      header: "Actions",
+      width: 90,
+      render: (i) => <IconButton icon={Trash2} label={`Delete ${i.repository}:${i.tag}`} danger onClick={() => remove(i)} disabled={busy !== null} />,
+    },
+  ];
+
   return (
     <>
       <PageHeader
@@ -124,31 +141,24 @@ export function ImagesPage() {
         actions={
           <>
             <SearchBar value={query} onChange={setQuery} placeholder="Search images" />
-            <Button variant="cancel" icon="pi-trash" onClick={() => setDialog("prune")} disabled={busy !== null}>
+            <Button variant="cancel" icon={Eraser} onClick={() => setDialog("prune")} disabled={busy !== null}>
               Clean up
             </Button>
-            <Button icon="pi-download" onClick={() => setDialog("pull")} disabled={busy !== null}>
+            <Button icon={Download} onClick={() => setDialog("pull")} disabled={busy !== null}>
               Pull image
             </Button>
           </>
         }
       />
       <ErrorBanner error={error} />
-      <DataTable value={rows} dataKey="id" loading={loading && !data} emptyMessage={<NoItemFound message={query ? "No images match." : "No images yet."} />}>
-        <Column field="repository" header="Name" sortable body={(i: ImageSummary) => <span className="font-medium text-ink">{i.repository}</span>} />
-        <Column field="tag" header="Tag" sortable body={(i: ImageSummary) => <span className="text-13">{i.tag}</span>} />
-        <Column field="shortId" header="Image ID" body={(i: ImageSummary) => <code className="text-xs text-grey">{i.shortId}</code>} />
-        <Column field="created" header="Created" sortable body={(i: ImageSummary) => <span className="text-13">{timeAgo(i.created)}</span>} />
-        <Column field="size" header="Size" sortable body={(i: ImageSummary) => <span className="text-13">{formatBytes(i.size)}</span>} />
-        <Column field="containers" header="Status" sortable body={(i: ImageSummary) => <ImageStatus img={i} />} />
-        <Column
-          header="Actions"
-          style={{ width: 90 }}
-          body={(i: ImageSummary) => (
-            <IconButton icon="pi-trash" label={`Delete ${i.repository}:${i.tag}`} danger onClick={() => remove(i)} disabled={busy !== null} />
-          )}
-        />
-      </DataTable>
+      <DataTable
+        rows={rows}
+        rowKey={(i) => i.id}
+        columns={columns}
+        loading={loading && !data}
+        defaultSort={{ key: "repository", dir: "asc" }}
+        empty={<NoItemFound message={query ? "No images match." : "No images yet."} />}
+      />
 
       {dialog === "pull" && (
         <PullDialog
