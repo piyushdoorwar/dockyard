@@ -13,6 +13,8 @@
   --color-row-expanded: #fafcfb;
   --color-control-line: #b9c4bd;
   --color-agent-line: #b9d5c4;
+  --color-scroll-thumb: rgba(14, 122, 67, 0.4);
+  --color-scroll-thumb-hover: rgba(14, 122, 67, 0.65);
   --color-primary: #0e7a43;
   --color-primary-hover: #0b6537;
   --color-primary-soft: rgba(14, 122, 67, 0.12);
@@ -41,29 +43,34 @@
 }
 
 :root[data-theme="dark"] {
+  /* Neutral charcoal surfaces; green is kept for accents and fills. */
   color-scheme: dark;
-  --color-surface: #18221c;
-  --color-canvas: #101712;
-  --color-ink: #edf5ef;
-  --color-body: #d3dfd7;
-  --color-grey: #b1c2b7;
-  --color-muted: #91a699;
-  --color-line: #35483c;
-  --color-line-soft: #25332a;
-  --color-control-line: #688572;
-  --color-accent: #72d79a;
-  --color-primary-soft: rgba(114, 215, 154, 0.14);
-  --color-primary-tint: #203a2a;
-  --color-success: #72d79a;
-  --color-success-soft: #203a2a;
-  --color-danger: #ff8fa4;
-  --color-danger-soft: #40222b;
-  --color-danger-line: #78404e;
-  --color-warning: #f0bf69;
-  --color-warning-soft: #3b301d;
-  --color-row-hover: #1d2d23;
-  --color-row-expanded: #152019;
-  --color-agent-line: #476b53;
+  --color-surface: #1e1f22;
+  --color-canvas: #161719;
+  --color-overlay: #000;
+  --color-terminal: #111214;
+  --color-ink: #f3f4f5;
+  --color-body: #d9dbde;
+  --color-grey: #b0b4ba;
+  --color-muted: #9095a0;
+  --color-line: #3a3c41;
+  --color-line-soft: #2a2b2f;
+  --color-control-line: #6b6f76;
+  --color-accent: #4cc983;
+  --color-primary-soft: rgba(76, 201, 131, 0.14);
+  --color-primary-tint: #1b3326;
+  --color-success: #4cc983;
+  --color-success-soft: #1b3326;
+  --color-danger: #ff8fa3;
+  --color-danger-soft: #3b2127;
+  --color-danger-line: #74404b;
+  --color-warning: #f2c46d;
+  --color-warning-soft: #372f1e;
+  --color-row-hover: #25262a;
+  --color-row-expanded: #1a1b1e;
+  --color-agent-line: #3f6b51;
+  --color-scroll-thumb: rgba(76, 201, 131, 0.4);
+  --color-scroll-thumb-hover: rgba(76, 201, 131, 0.65);
 }
 
 html,
@@ -292,20 +299,20 @@ kbd {
 /* --- Thin green scrollbars --- */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(14, 122, 67, 0.45) transparent;
+  scrollbar-color: var(--color-scroll-thumb) transparent;
 }
 *::-webkit-scrollbar {
   width: 9px;
   height: 9px;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(14, 122, 67, 0.4);
+  background: var(--color-scroll-thumb);
   border-radius: 9px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(14, 122, 67, 0.65);
+  background: var(--color-scroll-thumb-hover);
   background-clip: padding-box;
   border: 2px solid transparent;
 }

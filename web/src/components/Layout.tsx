@@ -16,7 +16,7 @@ function EngineStatus() {
   if (!data) return null;
   return (
     <span className="flex items-center gap-2 text-13 text-grey">
-      <span className="live-dot h-2 w-2 rounded-full bg-primary" aria-hidden />
+      <span className="live-dot h-2 w-2 rounded-full bg-accent" aria-hidden />
       <span className="hidden sm:inline">Engine running · Docker {data.serverVersion}</span>
     </span>
   );

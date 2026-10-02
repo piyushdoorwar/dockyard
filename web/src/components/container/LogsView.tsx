@@ -55,7 +55,7 @@ export function LogsView({ containerId }: { containerId: string }) {
         <span className="ml-auto flex items-center gap-2 text-13 text-muted" data-testid="log-state">
           {state === "open" && (
             <>
-              <span className="live-dot h-2 w-2 rounded-full bg-primary" aria-hidden />
+              <span className="live-dot h-2 w-2 rounded-full bg-accent" aria-hidden />
               Live
             </>
           )}

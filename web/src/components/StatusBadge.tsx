@@ -7,7 +7,7 @@ type Tone = "success" | "warning" | "danger" | "neutral";
 
 // Soft fills with dark text, so a column of statuses stays calm to scan.
 const TONE: Record<Tone, { pill: string; dot: string }> = {
-  success: { pill: "bg-success-soft text-accent", dot: "bg-primary" },
+  success: { pill: "bg-success-soft text-accent", dot: "bg-accent" },
   warning: { pill: "bg-warning-soft text-warning", dot: "bg-warning" },
   danger: { pill: "bg-danger-soft text-danger", dot: "bg-danger" },
   neutral: { pill: "bg-line-soft text-grey", dot: "bg-muted" },

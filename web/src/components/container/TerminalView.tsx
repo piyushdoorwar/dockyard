@@ -19,7 +19,12 @@ export function TerminalView({ containerId }: { containerId: string }) {
       cursorBlink: true,
       fontSize: 13,
       fontFamily: '"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace',
-      theme: { background: "#0f1a14", foreground: "#d7e3dc", cursor: "#6fd39b", selectionBackground: "rgba(111, 211, 155, 0.25)" },
+      theme: {
+        background: getComputedStyle(document.documentElement).getPropertyValue("--color-terminal").trim() || "#0f1a14",
+        foreground: "#d7e3dc",
+        cursor: "#6fd39b",
+        selectionBackground: "rgba(111, 211, 155, 0.25)",
+      },
     });
     const fit = new FitAddon();
     term.loadAddon(fit);

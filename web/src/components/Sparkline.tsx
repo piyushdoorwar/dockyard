@@ -66,7 +66,7 @@ export function Meter({ percent, label }: { percent: number; label: string }) {
       aria-valuenow={Math.round(clamped)}
       className="h-2 w-full overflow-hidden rounded-full bg-primary-soft"
     >
-      <div className="h-full rounded-full bg-primary" style={{ width: `${clamped}%` }} />
+      <div className="h-full rounded-full bg-accent" style={{ width: `${clamped}%` }} />
     </div>
   );
 }
