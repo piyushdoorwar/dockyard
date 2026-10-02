@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Dockyard is a local-first visual runtime for Docker containers and repository agent instructions." />
+    <meta name="theme-color" content="#0e7a43" />
+    <title>Dockyard · See what is running</title>
+    <link rel="icon" href="assets/favicon.png" type="image/png" sizes="64x64" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="topbar">
+      <div class="wrap bar">
+        <a class="brand" href="./"><img src="assets/dockyard.svg" alt="" /><span>Dockyard</span></a>
+        <nav aria-label="Primary"><a href="#features">Features</a><a href="#agents">Agent map</a><a href="#start">Get started</a><a class="github" href="https://github.com/piyushdoorwar/dockyard">GitHub</a></nav>
+      </div>
+    </header>
+    <main id="main">
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <span class="eyebrow"><i></i> Local-first container runtime</span>
+            <h1>See what is running.<br /><em>Know what it needs.</em></h1>
+            <p>Dockyard turns your local Docker engine into a focused visual workspace—containers, Compose stacks, logs, metrics, terminals, storage, and every <code>AGENTS.md</code> in one place.</p>
+            <div class="actions"><a class="button primary" href="#start">Run Dockyard</a><a class="button secondary" href="#features">Explore features</a></div>
+            <ul class="trust"><li>Local only</li><li>No account</li><li>No telemetry</li><li>Open source</li></ul>
+          </div>
+          <div class="product" aria-label="Dockyard product preview">
+            <div class="windowbar"><span></span><span></span><span></span><code>localhost:41739</code></div>
+            <div class="app-shell">
+              <aside>
+                <div class="mini-brand"><img src="assets/dockyard.svg" alt="" />Dockyard</div>
+                <small>Workspace</small>
+                <b>▦ Dashboard</b><span>▣ Containers</span><span>⌘ Stacks</span><span>◫ Images</span><span>◉ Volumes</span><span>⑂ Agents</span>
+              </aside>
+              <div class="app-main">
+                <div class="app-head"><b>Runtime overview</b><span><i></i> Engine running</span></div>
+                <div class="cards"><article><small>Containers</small><strong>12</strong><span>8 running · 4 stopped</span></article><article><small>Images</small><strong>19</strong><span>4.8 GB</span></article><article><small>Volumes</small><strong>7</strong><span>11.2 GB</span></article></div>
+                <div class="runtime"><div class="runtime-head"><b>Live containers</b><span>CPU &amp; memory</span></div><div class="row"><i class="on"></i><b>api-gateway</b><code>0.8%</code><div class="meter"><i style="width:32%"></i></div></div><div class="row"><i class="on"></i><b>postgres</b><code>2.1%</code><div class="meter"><i style="width:54%"></i></div></div><div class="row"><i></i><b>worker</b><code>stopped</code><div class="meter"><i style="width:0"></i></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section white" id="features">
+        <div class="wrap"><div class="section-copy"><span class="kicker">The whole local runtime</span><h2>Everything you reach for, without leaving the browser.</h2><p>Day-to-day controls are close at hand, while destructive actions stay explicit and Dockyard protects its own runtime.</p></div>
+          <div class="feature-grid">
+            <article><span class="num">01</span><h3>Containers</h3><p>Start, stop, restart, inspect, remove, and filter every container on your engine.</p></article>
+            <article><span class="num">02</span><h3>Live diagnostics</h3><p>Stream logs and CPU, memory, network, disk, and process metrics in real time.</p></article>
+            <article><span class="num">03</span><h3>Terminal</h3><p>Open an interactive shell directly inside a running container with resize support.</p></article>
+            <article><span class="num">04</span><h3>Compose stacks</h3><p>See services as projects and control a whole stack without losing container detail.</p></article>
+            <article><span class="num">05</span><h3>Images &amp; volumes</h3><p>Pull and prune images, inspect disk use, and safely manage persistent volumes.</p></article>
+            <article><span class="num">06</span><h3>Engine cleanup</h3><p>Reclaim stopped containers, dangling images, networks, and build cache in one reviewable action.</p></article>
+          </div>
+        </div>
+      </section>
+      <section class="section agent-band" id="agents">
+        <div class="wrap agent-grid">
+          <div class="section-copy"><span class="kicker">Agent-aware</span><h2>One map for every instruction file.</h2><p>Dockyard recursively discovers `AGENTS.md` files, preserves their repository context, and combines their headings into a searchable visual hierarchy.</p><ul><li>Repository-wide recursive discovery</li><li>Generated and vendor folders ignored</li><li>Search across paths and content</li><li>Read-only workspace access</li></ul></div>
+          <div class="agent-demo"><div class="trunk"></div><article><header><span>⌘</span><div><b>AGENTS.md</b><small>3 sections</small></div></header><p><i>H1</i> Project instructions</p><pre>Use the workspace conventions…</pre></article><article><header><span>⌘</span><div><b>packages/api/AGENTS.md</b><small>2 sections</small></div></header><p><i>H2</i> Testing</p><pre>Run integration tests against…</pre></article></div>
+        </div>
+      </section>
+      <section class="section white" id="start"><div class="wrap start"><span class="kicker">Get started</span><h2>Your engine, in view.</h2><p>Build the image, mount the Docker socket and your repository, then open Dockyard on localhost.</p><div class="command"><code>docker run --rm --name dockyard -p 127.0.0.1:41739:41739 -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD:/workspace:ro" dockyard</code><button type="button" data-copy>Copy</button></div><small>Build locally first with <code>docker build -t dockyard .</code></small></div></section>
+    </main>
+    <footer><div class="wrap"><a class="brand" href="./"><img src="assets/dockyard.svg" alt="" /><span>Dockyard</span></a><p>Local containers, clearly.</p></div></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
