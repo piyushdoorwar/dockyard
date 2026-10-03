@@ -78,6 +78,7 @@ export class FakeWebSocket {
   binaryType = "blob";
   sent: string[] = [];
   onopen: (() => void) | null = null;
+  onerror: (() => void) | null = null;
   onmessage: ((e: { data: unknown }) => void) | null = null;
   onclose: (() => void) | null = null;
   constructor(public url: string) {

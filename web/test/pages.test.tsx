@@ -65,6 +65,21 @@ const IMAGES: ImageSummary[] = [
 ];
 
 describe("ImagesPage", () => {
+  it("keeps the image name available to correct after a failed pull", async () => {
+    mockApi({ "GET /api/images": [], "POST /api/images/pull": () => { throw { status: 404, error: "manifest unknown" }; } });
+    const user = userEvent.setup();
+    renderPage(<ImagesPage />);
+    await user.click(screen.getByRole("button", { name: "Pull image" }));
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveFocus();
+    await user.type(input, "missing:tag");
+    await user.click(screen.getByRole("button", { name: "Pull" }));
+    expect(await screen.findByText("manifest unknown")).toBeInTheDocument();
+    await waitFor(() => expect(input).toBeEnabled());
+    expect(input).toHaveValue("missing:tag");
+    expect(screen.getByRole("dialog", { name: "Pull image" })).toBeInTheDocument();
+  });
+
   it("labels in-use and dangling images", async () => {
     mockApi({ "GET /api/images": IMAGES });
     renderPage(<ImagesPage />);

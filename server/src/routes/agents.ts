@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { promises as fs } from "node:fs";
+import { constants, promises as fs } from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
 import type { AgentFile, AgentSection, AgentsManifest } from "../../../shared/types.js";
 
@@ -70,15 +70,13 @@ async function discoverAgentFiles(root: string): Promise<string[]> {
     } catch {
       return;
     }
-    await Promise.all(
-      entries.map(async (entry) => {
-        // Symlinks are skipped outright, so a link back up the tree can't loop.
-        if (entry.isSymbolicLink()) return;
-        const fullPath = join(directory, entry.name);
-        if (entry.isDirectory() && !IGNORED.has(entry.name)) await visit(fullPath, depth + 1);
-        if (entry.isFile() && entry.name.toLowerCase() === "agents.md") found.push(fullPath);
-      }),
-    );
+    for (const entry of entries) {
+      // Traverse sequentially to bound filesystem work even in wide trees.
+      if (entry.isSymbolicLink()) continue;
+      const fullPath = join(directory, entry.name);
+      if (entry.isDirectory() && !IGNORED.has(entry.name)) await visit(fullPath, depth + 1);
+      if (entry.isFile() && entry.name.toLowerCase() === "agents.md") found.push(fullPath);
+    }
   }
   await visit(root, 0);
   return found.sort((a, b) => a.localeCompare(b));
@@ -88,7 +86,8 @@ async function discoverAgentFiles(root: string): Promise<string[]> {
 async function readCapped(path: string): Promise<{ content: string; truncated: boolean } | null> {
   let handle: import("node:fs/promises").FileHandle | undefined;
   try {
-    handle = await fs.open(path, "r");
+    handle = await fs.open(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+    if (!(await handle.stat()).isFile()) return null;
     const buf = Buffer.alloc(MAX_FILE_BYTES + 1);
     const { bytesRead } = await handle.read(buf, 0, buf.length, 0);
     const truncated = bytesRead > MAX_FILE_BYTES;
@@ -104,8 +103,10 @@ async function readCapped(path: string): Promise<{ content: string; truncated: b
 export async function readAgentsManifest(workspaceRoot: string): Promise<AgentsManifest> {
   const root = resolve(workspaceRoot);
   const paths = await discoverAgentFiles(root);
-  const read = await Promise.all(
-    paths.map(async (path): Promise<AgentFile | null> => {
+  const read: (AgentFile | null)[] = [];
+  // Each capped read allocates 512 KB, so keep only four reads active.
+  for (let i = 0; i < paths.length; i += 4) {
+    read.push(...await Promise.all(paths.slice(i, i + 4).map(async (path): Promise<AgentFile | null> => {
       const file = await readCapped(path);
       if (!file) return null;
       const relativePath = relative(root, path) || basename(path);
@@ -118,8 +119,8 @@ export async function readAgentsManifest(workspaceRoot: string): Promise<AgentsM
         sections: parseSections(file.content),
         ...(file.truncated ? { truncated: true } : {}),
       };
-    }),
-  );
+    })));
+  }
   const files = read.filter((f): f is AgentFile => f !== null);
   return { root, files, scannedAt: new Date().toISOString() };
 }
@@ -128,10 +129,10 @@ export function agentRoutes(app: FastifyInstance, workspaceRoot: string): void {
   let cached: { at: number; manifest: Promise<AgentsManifest> } | undefined;
   app.get("/api/agents", async () => {
     if (!cached || Date.now() - cached.at > CACHE_MS) {
-      const entry = { at: Date.now(), manifest: readAgentsManifest(workspaceRoot) };
+      const entry = { at: Infinity, manifest: readAgentsManifest(workspaceRoot) };
       cached = entry;
       // A failed scan shouldn't be served from cache.
-      entry.manifest.catch(() => {
+      entry.manifest.then(() => { entry.at = Date.now(); }, () => {
         if (cached === entry) cached = undefined;
       });
     }

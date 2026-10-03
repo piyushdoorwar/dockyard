@@ -70,6 +70,8 @@ export function TerminalView({ containerId }: { containerId: string }) {
     return () => {
       observer.disconnect();
       input.dispose();
+      ws.onopen = null;
+      ws.onmessage = null;
       ws.onclose = null;
       ws.close();
       term.dispose();

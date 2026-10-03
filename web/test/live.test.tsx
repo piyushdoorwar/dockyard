@@ -46,6 +46,28 @@ describe("LogsView", () => {
     expect(FakeWebSocket.instances).toHaveLength(2);
   });
 
+  it("ignores events from an old connection after replacement", () => {
+    const { rerender } = render(<LogsView containerId="old" />);
+    const old = FakeWebSocket.last();
+    rerender(<LogsView containerId="new" />);
+    act(() => {
+      old.open();
+      old.emit({ type: "logs", lines: [{ stream: "stdout", ts: null, text: "stale log" }] });
+    });
+    expect(screen.queryByText("stale log")).not.toBeInTheDocument();
+    expect(screen.getByTestId("log-state")).toHaveTextContent("Connecting");
+  });
+
+  it("reports a transport failure as an error rather than a stopped container", () => {
+    render(<LogsView containerId="abc" />);
+    act(() => {
+      FakeWebSocket.last().onerror?.();
+      FakeWebSocket.last().serverClose();
+    });
+    expect(screen.getByTestId("log-state")).toHaveTextContent("Could not connect");
+    expect(screen.getByRole("button", { name: "Reconnect" })).toBeInTheDocument();
+  });
+
   it("shows server errors", () => {
     render(<LogsView containerId="ghost" />);
     act(() => FakeWebSocket.last().emit({ type: "error", message: "No such container: ghost" }));

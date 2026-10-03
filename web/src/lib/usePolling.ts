@@ -18,37 +18,52 @@ export function usePolling<T>(fetcher: () => Promise<T>, intervalMs: number): Po
   const [loading, setLoading] = useState(true);
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
-  const inFlight = useRef(false);
-  const mounted = useRef(true);
-
-  const refresh = useCallback(async () => {
-    if (inFlight.current) return;
-    inFlight.current = true;
-    try {
-      const next = await fetcherRef.current();
-      if (mounted.current) {
-        setData(next);
-        setError(undefined);
-      }
-    } catch (err) {
-      if (mounted.current) setError(err instanceof Error ? err : new Error(String(err)));
-    } finally {
-      inFlight.current = false;
-      if (mounted.current) setLoading(false);
-    }
-  }, []);
+  const requestRef = useRef<() => Promise<void>>(async () => {});
+  const refresh = useCallback(() => requestRef.current(), []);
 
   useEffect(() => {
-    mounted.current = true;
-    void refresh();
-    const timer = setInterval(() => {
-      if (document.visibilityState !== "hidden") void refresh();
-    }, intervalMs);
-    return () => {
-      mounted.current = false;
-      clearInterval(timer);
+    let active = true;
+    let inFlight: Promise<void> | undefined;
+    let queued = false;
+    const request = (force: boolean): Promise<void> => {
+      if (inFlight) {
+        // A mutation may finish during an older read. Fetch again afterwards
+        // and let the caller await the fresh result rather than dropping it.
+        if (force) queued = true;
+        return inFlight;
+      }
+      inFlight = (async () => {
+        do {
+          queued = false;
+          try {
+            const next = await Promise.resolve().then(fetcherRef.current);
+            if (active) {
+              setData(next);
+              setError(undefined);
+            }
+          } catch (err) {
+            if (active) setError(err instanceof Error ? err : new Error(String(err)));
+          } finally {
+            if (active) setLoading(false);
+          }
+        } while (active && queued);
+      })().finally(() => { inFlight = undefined; });
+      return inFlight;
     };
-  }, [refresh, intervalMs]);
+    requestRef.current = () => request(true);
+    const poll = () => {
+      if (document.visibilityState !== "hidden") void request(false);
+    };
+    poll();
+    const timer = setInterval(poll, intervalMs);
+    document.addEventListener("visibilitychange", poll);
+    return () => {
+      active = false;
+      requestRef.current = async () => {};
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", poll);
+    };
+  }, [intervalMs]);
 
   return { data, error, loading, refresh };
 }

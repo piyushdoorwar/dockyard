@@ -44,8 +44,17 @@ export function useLiveSocket(
     ws.onclose = () => {
       if (!finished) setState("ended");
     };
+    ws.onerror = () => {
+      finished = true;
+      setError("Could not connect to the live stream. Try reconnecting.");
+      setState("error");
+    };
     return () => {
       finished = true;
+      ws.onopen = null;
+      ws.onmessage = null;
+      ws.onclose = null;
+      ws.onerror = null;
       ws.close();
     };
   }, [path, generation]);

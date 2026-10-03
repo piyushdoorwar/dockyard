@@ -109,11 +109,10 @@ describe("stacks", () => {
     expect(res.json()).toMatchObject([{ name: "sample", status: "partial", running: 1, total: 2 }]);
   });
 
-  it("stops every container in the stack (except itself) and reports each result", async () => {
+  it("stops every container in the stack and reports each result", async () => {
     const listContainers = vi.fn().mockResolvedValue([
       rawContainer({ Id: "api", Names: ["/sample-api-1"], Labels: compose("sample", "api") }),
       rawContainer({ Id: "db", Names: ["/sample-db-1"], Labels: compose("sample", "db") }),
-      rawContainer({ Id: "me", Names: ["/dm"], Labels: { ...compose("sample", "dm"), "com.dockyard.runtime": "true" } }),
     ]);
     const { asDocker, containers } = fakeDocker({ listContainers });
     const db = fakeContainer();
@@ -129,6 +128,18 @@ describe("stacks", () => {
       { id: "db", name: "sample-db-1", ok: false, error: "boom" },
     ]);
     expect(containers.has("me")).toBe(false);
+  });
+
+  it.each(["stop", "restart", "start", "delete"])("rejects %s for the whole stack when it contains Dockyard", async (action) => {
+    const { asDocker, docker } = fakeDocker({ listContainers: vi.fn().mockResolvedValue([
+      rawContainer({ Id: "api", Labels: compose("sample", "api") }),
+      rawContainer({ Id: "me", Labels: { ...compose("sample", "dockyard"), "com.dockyard.runtime": "true" } }),
+    ]) });
+    app = await appWith(asDocker);
+    const res = await app.inject({ method: action === "delete" ? "DELETE" : "POST",
+      url: `/api/stacks/sample${action === "delete" ? "" : `/${action}`}`, headers: MUTATE });
+    expect(res.statusCode).toBe(409);
+    expect(docker.getContainer).not.toHaveBeenCalled();
   });
 
   it("404s for an unknown stack", async () => {

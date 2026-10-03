@@ -1,4 +1,5 @@
 import { ArrowLeft, Braces, ChartLine, Stethoscope, Loader2, Play, RotateCw, ScrollText, Square, SquareTerminal, Trash2 } from "lucide-react";
+import { lazy, Suspense } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import type { PortMapping } from "../../../shared/types";
 import { Button } from "../components/Button";
@@ -6,7 +7,6 @@ import { DiagnosticsView } from "../components/container/DiagnosticsView";
 import { InspectView } from "../components/container/InspectView";
 import { LogsView } from "../components/container/LogsView";
 import { StatsView } from "../components/container/StatsView";
-import { TerminalView } from "../components/container/TerminalView";
 import { ErrorBanner, PageHeader } from "../components/Page";
 import { PortLinks } from "../components/PortLinks";
 import { ContainerStatus } from "../components/StatusBadge";
@@ -14,6 +14,8 @@ import { type Tab, TabButton } from "../components/TabButton";
 import { api, type ContainerInspect } from "../lib/api";
 import { SELF_REASON, useContainerActions } from "../lib/useContainerActions";
 import { usePolling } from "../lib/usePolling";
+
+const TerminalView = lazy(() => import("../components/container/TerminalView").then((module) => ({ default: module.TerminalView })));
 
 type TabId = "diagnostics" | "logs" | "inspect" | "terminal" | "stats";
 const TABS: Tab<TabId>[] = [
@@ -60,6 +62,10 @@ export function statusText(info: ContainerInspect): string | undefined {
 
 export function ContainerDetailPage() {
   const { id = "" } = useParams();
+  return <ContainerDetail key={id} id={id} />;
+}
+
+function ContainerDetail({ id }: { id: string }) {
   const navigate = useNavigate();
   const { data: info, error, refresh } = usePolling(() => api.inspectContainer(id), 4_000);
   const { busy, act, remove } = useContainerActions(refresh);
@@ -145,7 +151,7 @@ export function ContainerDetailPage() {
         {tab === "diagnostics" && <DiagnosticsView containerId={info.Id} onShowLogs={() => setTab("logs")} />}
         {tab === "inspect" && <InspectView info={info} />}
         {tab === "terminal" &&
-          (running ? <TerminalView containerId={info.Id} /> : <Idle>Start the container to open a terminal.</Idle>)}
+          (running ? <Suspense fallback={<Idle>Loading terminal…</Idle>}><TerminalView containerId={info.Id} /></Suspense> : <Idle>Start the container to open a terminal.</Idle>)}
         {tab === "stats" && (running ? <StatsView containerId={info.Id} /> : <Idle>Start the container to see live stats.</Idle>)}
       </div>
     </>

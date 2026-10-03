@@ -7,7 +7,7 @@ describe("isLoopbackHost", () => {
   it.each(["localhost:41739", "127.0.0.1:41739", "[::1]:41739", "localhost"])("accepts %s", (h) => {
     expect(isLoopbackHost(h)).toBe(true);
   });
-  it.each(["evil.com", "localhost.evil.com:41739", "192.168.1.5:41739", "", undefined])("rejects %s", (h) => {
+  it.each(["evil.com", "localhost.evil.com:41739", "192.168.1.5:41739", "", undefined, "evil@localhost", "localhost/path", "localhost?x", "localhost#x", " localhost", "localhost:"])("rejects %s", (h) => {
     expect(isLoopbackHost(h)).toBe(false);
   });
 });
@@ -19,7 +19,7 @@ describe("isSameOrigin", () => {
   it("allows the app's own origin", () => {
     expect(isSameOrigin("http://localhost:41739", "localhost:41739")).toBe(true);
   });
-  it.each(["http://evil.com", "http://localhost:3000", "null", "not a url"])("rejects %s", (o) => {
+  it.each(["http://evil.com", "http://localhost:3000", "null", "not a url", "https://localhost:41739", "ftp://localhost:41739", "http://user@localhost:41739", "http://localhost:41739/path"])("rejects %s", (o) => {
     expect(isSameOrigin(o, "localhost:41739")).toBe(false);
   });
   it("normalises the Host header the way browsers normalise Origin", () => {

@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Route, Routes } from "react-router";
+import { Link, Route, Routes } from "react-router";
 import type { ContainerDiagnostics } from "../../shared/types";
 import { DiagnosticsView, failureSignals } from "../src/components/container/DiagnosticsView";
 import { ContainerDetailPage } from "../src/pages/ContainerDetailPage";
@@ -46,6 +46,25 @@ describe("failure diagnostics", () => {
     expect(screen.getByRole("tab", { name: "Diagnostics" })).toHaveAttribute("aria-selected", "true");
     fireEvent.click(screen.getByRole("button", { name: "Open live logs" }));
     expect(screen.getByRole("tab", { name: "Logs" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("resets the detail and diagnostics state when navigating between container IDs", async () => {
+    const inspect = (id: string) => ({ Id: id, Name: `/${id}`, Config: { Image: "alpine", Labels: {} },
+      State: { Status: "exited", Running: false }, NetworkSettings: { Ports: {} } });
+    const mocked = mockApi({
+      "GET /api/containers/failed": inspect("failed"),
+      "GET /api/containers/failed/diagnostics": diagnostics,
+      "GET /api/containers/other": inspect("other"),
+      "GET /api/containers/other/diagnostics": { ...diagnostics, id: "other", logs: [] },
+    });
+    renderPage(<><Link to="/containers/other?tab=diagnostics">Other container</Link>
+      <Routes><Route path="/containers/:id" element={<ContainerDetailPage />} /></Routes></>, "/containers/failed?tab=diagnostics");
+    expect(await screen.findByText("database unavailable")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "Other container" }));
+    expect(screen.queryByText("database unavailable")).not.toBeInTheDocument();
+    expect(await screen.findByText("No recent log lines available.")).toBeInTheDocument();
+    expect(mocked.calls.some(c => c.url === "/api/containers/other")).toBe(true);
+    expect(screen.getByRole("heading", { name: /other/ })).toBeInTheDocument();
   });
 
   it("surfaces the diagnostics entry from a failed container row", async () => {

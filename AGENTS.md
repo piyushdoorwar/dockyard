@@ -43,7 +43,7 @@ server/src/   index.ts (env, listen), app.ts (wiring, SPA fallback), security.ts
               stats.ts (CPU/memory math), streams.ts (log demux),
               routes/*.ts (system, containers, stacks, images, volumes, live, agents)
 shared/types.ts   JSON shapes shared by server and web, CSRF_HEADER
-web/src/      React 19 + Vite 7 + Tailwind 4 UI
+web/src/      React 19 + Vite 8 + Tailwind 4 UI
   components/  Button, Modal, Confirm, Toast, DataTable, Page, SideNav, Layout, Logo,
                StatusBadge, TabButton, SearchBar (+ Toggle), Sparkline (+ Meter), PortLinks,
                container/ (LogsView, StatsView, TerminalView, InspectView)

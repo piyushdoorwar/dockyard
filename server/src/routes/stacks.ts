@@ -20,7 +20,10 @@ const nameParams = {
 export function stackRoutes(app: FastifyInstance, docker: Docker): void {
   async function stackContainers(name: string) {
     const list = await docker.listContainers({ all: true, filters: { label: [`${PROJECT_LABEL}=${name}`] } });
-    const containers = list.map(toContainerSummary).filter((c) => !c.isSelf);
+    const containers = list.map(toContainerSummary);
+    if (containers.some((c) => c.isSelf)) {
+      throw new HttpError(409, "This stack contains Dockyard. Manage it from your host terminal.");
+    }
     if (containers.length === 0) throw new HttpError(404, `No containers found for stack "${name}".`);
     return containers;
   }

@@ -7,8 +7,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   root: "web",
   plugins: [react(), tailwindcss()],
-  // Served from localhost only, so one ~1 MB bundle is fine — no need to code-split.
-  build: { outDir: "../dist/web", emptyOutDir: true, chunkSizeWarningLimit: 1500 },
+  build: { outDir: "../dist/web", emptyOutDir: true },
   server: {
     port: 5173,
     proxy: { "/api": { target: "http://127.0.0.1:41739", ws: true } },

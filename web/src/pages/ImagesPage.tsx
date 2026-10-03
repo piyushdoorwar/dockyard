@@ -13,15 +13,15 @@ import { formatBytes, timeAgo } from "../lib/format";
 import { useAction } from "../lib/useAction";
 import { usePolling } from "../lib/usePolling";
 
-function PullDialog({ onPull, onClose }: { onPull: (image: string) => Promise<void>; onClose: () => void }) {
+function PullDialog({ onPull, onClose }: { onPull: (image: string) => Promise<boolean>; onClose: () => void }) {
   const [image, setImage] = useState("");
   const [pulling, setPulling] = useState(false);
   const submit = async () => {
-    if (!image.trim()) return;
+    if (!image.trim() || pulling) return;
     setPulling(true);
-    await onPull(image.trim());
+    const succeeded = await onPull(image.trim());
     setPulling(false);
-    onClose();
+    if (succeeded) onClose();
   };
   return (
     <Modal
@@ -57,7 +57,7 @@ function PullDialog({ onPull, onClose }: { onPull: (image: string) => Promise<vo
           className="input font-mono"
         />
         <p className="mt-2 text-12 text-muted">
-          Private registries work once you have run <code>docker login</code> on the host.
+          For private images, run <code>docker pull</code> on your host first. Dockyard does not read your registry credentials.
         </p>
       </form>
     </Modal>
@@ -164,7 +164,7 @@ export function ImagesPage() {
         <PullDialog
           onClose={() => setDialog(null)}
           onPull={async (image) => {
-            await run("pull", () => api.pullImage(image), (r) => `Pulled ${r.image}`);
+            return (await run("pull", () => api.pullImage(image), (r) => `Pulled ${r.image}`)) !== undefined;
           }}
         />
       )}

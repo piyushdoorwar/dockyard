@@ -17,6 +17,7 @@ const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 /** A Host header as URL parses it: lowercased, default port dropped. */
 function parseHost(host: string): URL | null {
+  if (!/^(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/i.test(host)) return null;
   try {
     return new URL(`http://${host}`);
   } catch {
@@ -31,13 +32,17 @@ export function isLoopbackHost(host: string | undefined): boolean {
 }
 
 /** No Origin (curl, health checks) is fine; otherwise it must be this very server. */
-export function isSameOrigin(origin: string | undefined, host: string | undefined): boolean {
+export function isSameOrigin(origin: string | undefined, host: string | undefined, protocol = "http"): boolean {
   if (origin === undefined) return true;
   if (!host) return false;
   try {
     // Compare normalised forms: a browser omits :80 from Origin and lowercases
     // it, while the Host header is sent as typed.
-    return new URL(origin).host === parseHost(host)?.host;
+    if (!parseHost(host)) return false;
+    const source = new URL(origin);
+    return source.origin === new URL(`${protocol}://${host}`).origin &&
+      source.username === "" && source.password === "" && source.pathname === "/" &&
+      source.search === "" && source.hash === "";
   } catch {
     return false;
   }
@@ -68,7 +73,7 @@ export function registerSecurity(app: FastifyInstance): void {
       return reply.code(403).send({ error: "Dockyard only accepts requests addressed to localhost." });
     }
     const origin = typeof req.headers.origin === "string" ? req.headers.origin : undefined;
-    if (!isSameOrigin(origin, host)) {
+    if (!isSameOrigin(origin, host, req.protocol)) {
       return reply.code(403).send({ error: "Cross-origin requests are not allowed." });
     }
     if (!SAFE_METHODS.has(req.method) && req.headers[CSRF_HEADER] !== "1") {

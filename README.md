@@ -106,7 +106,7 @@ so stop, restart or remove it from your terminal rather than from the UI.
 
 ## Develop
 
-Requires Node.js 22+ (CI uses 24) and a running Docker engine. Install the Docker
+Requires Node.js 22.22.2+, 24.15.0+, or 26+ (CI uses 24) and a running Docker engine. Install the Docker
 Compose CLI plugin (`docker compose version`) for configuration previews during local
 development; it is bundled in the runtime image. Without it, files are still
 discovered and the UI explains that previews are unavailable.
