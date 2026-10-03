@@ -186,5 +186,57 @@ export interface ComposeManifest {
   scannedAt: string;
 }
 
+export interface NetworkAttachment {
+  networkId: string | null;
+  name: string;
+  ipv4: string | null;
+  ipv6: string | null;
+  aliases: string[];
+  /** An endpoint currently exists, rather than only a saved network configuration. */
+  attached: boolean;
+}
+
+export interface NetworkContainer extends Pick<ContainerSummary, "id" | "name" | "state" | "status" | "project" | "service"> {
+  networkMode: string;
+  effectiveNetworkMode: string;
+  /** Root container ID, "host", or null when a shared namespace cannot be resolved. */
+  namespaceId: string | null;
+  networks: NetworkAttachment[];
+}
+
+export interface HostPortBinding {
+  containerId: string;
+  containerPort: number;
+  protocol: string;
+  hostIp: string;
+  /** Null means Docker will allocate a port when the container starts. */
+  hostPort: number | null;
+  kind: "published" | "configured";
+}
+
+export interface NetworkSummary {
+  id: string;
+  name: string;
+  driver: string;
+  scope: string;
+  internal: boolean;
+  attachable: boolean;
+  ipv6: boolean;
+  defaultBridge: boolean;
+  /** Only describes Docker's bridge ICC option; it is not a connectivity probe. */
+  communicationDisabled: boolean;
+  subnets: { subnet: string; gateway: string | null }[];
+  project: string | null;
+  containerIds: string[];
+}
+
+export interface NetworkingSnapshot {
+  containers: NetworkContainer[];
+  ports: HostPortBinding[];
+  networks: NetworkSummary[];
+  warnings: string[];
+  scannedAt: string;
+}
+
 /** Header every state-changing request must carry (see server/src/security.ts). */
 export const CSRF_HEADER = "x-dockyard";

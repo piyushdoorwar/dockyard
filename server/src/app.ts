@@ -9,6 +9,7 @@ import { agentRoutes } from "./routes/agents.js";
 import { containerRoutes } from "./routes/containers.js";
 import { composeRoutes } from "./routes/compose.js";
 import { imageRoutes } from "./routes/images.js";
+import { networkingRoutes } from "./routes/networking.js";
 import { liveRoutes } from "./routes/live.js";
 import { stackRoutes } from "./routes/stacks.js";
 import { systemRoutes } from "./routes/system.js";
@@ -44,6 +45,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
   containerRoutes(app, opts.docker);
   stackRoutes(app, opts.docker);
   imageRoutes(app, opts.docker);
+  networkingRoutes(app, opts.docker);
   volumeRoutes(app, opts.docker);
   liveRoutes(app, opts.docker);
   agentRoutes(app, opts.workspaceRoot ?? process.cwd());

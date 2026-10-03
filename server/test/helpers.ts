@@ -52,6 +52,7 @@ export function fakeDocker(over: Record<string, unknown> = {}) {
   const containers = new Map<string, FakeContainer>();
   const docker = {
     listContainers: vi.fn().mockResolvedValue([]),
+    listNetworks: vi.fn().mockResolvedValue([]),
     listImages: vi.fn().mockResolvedValue([]),
     listVolumes: vi.fn().mockResolvedValue({ Volumes: [], Warnings: [] }),
     df: vi.fn().mockResolvedValue({ LayersSize: 0, Images: [], Containers: [], Volumes: [], BuildCache: [] }),

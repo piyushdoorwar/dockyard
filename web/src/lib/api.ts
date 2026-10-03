@@ -7,6 +7,7 @@ import {
   CSRF_HEADER,
   type DiskUsage,
   type ImageSummary,
+  type NetworkingSnapshot,
   type PruneResult,
   type StackStatus,
   type StackSummary,
@@ -57,6 +58,7 @@ const enc = encodeURIComponent;
 export type ContainerAction = "start" | "stop" | "restart";
 
 export const api = {
+  networking: () => request<NetworkingSnapshot>("GET", "/api/networking"),
   compose: () => request<ComposeManifest>("GET", "/api/compose"),
   rescanCompose: () => request<ComposeManifest>("GET", "/api/compose?refresh=1"),
   composePreview: (file: string, override = "") => request<ComposeProject>("GET", `/api/compose/preview?${new URLSearchParams({ file, override })}`),

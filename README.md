@@ -34,6 +34,19 @@ Then open <http://localhost:41739>.
 - **No workspace?** Leave out the `/workspace` mount; everything except workspace discovery (Compose and Agents)
   works without it.
 
+### Inspect ports and networks
+
+Open **Networking** to find a published port's owning container, bind address,
+protocol, and Compose stack. Search by port or container name; enable **Include
+inactive mappings** to see saved bindings for stopped containers, including ports
+that will be allocated dynamically on start.
+
+The **Networks** tab shows drivers, subnets, and local container membership. Expand
+a network for addresses and DNS aliases, or compare two containers to see whether
+they share an active network or network namespace. This checks Docker configuration,
+not live service connectivity. Host-network listeners and non-Docker processes are
+outside the port inventory. The view is read-only and refreshes every five seconds.
+
 ### Discover Compose projects
 
 Open **Compose** to scan the mounted workspace, including nested repositories. Dockyard

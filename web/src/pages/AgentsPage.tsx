@@ -1,5 +1,5 @@
-import { FileText, Network, RefreshCw } from "lucide-react";
-import { type CSSProperties, useMemo, useState } from "react";
+import { ChevronDown, FileText, Network, RefreshCw } from "lucide-react";
+import { type CSSProperties, useId, useMemo, useState } from "react";
 import type { AgentFile } from "../../../shared/types";
 import { Button } from "../components/Button";
 import { ErrorBanner, PageHeader } from "../components/Page";
@@ -8,42 +8,50 @@ import { api } from "../lib/api";
 import { usePolling } from "../lib/usePolling";
 
 function AgentDocument({ file }: { file: AgentFile }) {
+  const [expanded, setExpanded] = useState(false);
+  const contentId = useId();
   return (
     <article className="agent-document">
-      <header className="flex items-center gap-3 border-b border-line-soft px-4 py-3.5 sm:px-5">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-accent">
-          <FileText size={16} aria-hidden />
-        </span>
-        <div className="min-w-0">
-          <h2 className="truncate font-mono text-13 font-medium text-ink" title={file.relativePath}>
-            {file.relativePath}
-          </h2>
-          <p className="mt-0.5 text-11 text-muted">
-            {file.sections.length} instruction {file.sections.length === 1 ? "section" : "sections"}
-            {file.truncated && <span className="text-warning"> · too large, showing the first 512 KB</span>}
-          </p>
-        </div>
-      </header>
-      <div className="grid px-4 pt-1 pb-4 sm:px-5">
-        {file.sections.length === 0 ? (
-          <p className="pt-3 text-13 text-muted">This file is empty.</p>
-        ) : (
-          file.sections.map((section, index) => (
-            <section className="agent-section" key={`${section.title}-${index}`} style={{ "--depth": Math.max(0, section.level - 1) } as CSSProperties}>
-              <div className="agent-section-marker" aria-hidden />
-              <div className="min-w-0">
-                <span className="float-left mt-px mr-2 rounded bg-primary-tint px-1.5 py-0.5 font-mono text-[9px] font-semibold text-grey">
-                  {section.level ? `H${section.level}` : "TXT"}
-                </span>
-                <h3 className="text-13 font-medium text-ink">{section.title}</h3>
-                {section.body && (
-                  <pre className="mt-2 max-h-44 overflow-auto rounded-md border border-line-soft bg-line-soft px-3 py-2.5 text-[11.5px] leading-relaxed whitespace-pre-wrap text-body">
-                    {section.body}
-                  </pre>
-                )}
-              </div>
-            </section>
-          ))
+      <h2>
+        <button type="button" aria-expanded={expanded} aria-controls={contentId} onClick={() => setExpanded(!expanded)}
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-left hover:bg-primary-tint focus-visible:outline-2 focus-visible:outline-accent sm:px-5">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-accent">
+            <FileText size={16} aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1 break-words font-mono text-13 font-medium text-ink">{file.relativePath}</span>
+          <ChevronDown size={17} aria-hidden className={`shrink-0 text-muted transition-transform ${expanded ? "rotate-180" : ""}`} />
+        </button>
+      </h2>
+      <div id={contentId} hidden={!expanded}>
+        {expanded && (
+          <>
+            <p className="border-t border-line-soft px-4 pt-3 text-11 text-muted sm:px-5">
+              {file.sections.length} instruction {file.sections.length === 1 ? "section" : "sections"}
+              {file.truncated && <span className="text-warning"> · too large, showing the first 512 KB</span>}
+            </p>
+            <div className="grid px-4 pt-1 pb-4 sm:px-5">
+              {file.sections.length === 0 ? (
+                <p className="pt-3 text-13 text-muted">This file is empty.</p>
+              ) : (
+                file.sections.map((section, index) => (
+                  <section className="agent-section" key={`${section.title}-${index}`} style={{ "--depth": Math.max(0, section.level - 1) } as CSSProperties}>
+                    <div className="agent-section-marker" aria-hidden />
+                    <div className="min-w-0">
+                      <span className="float-left mt-px mr-2 rounded bg-primary-tint px-1.5 py-0.5 font-mono text-[9px] font-semibold text-grey">
+                        {section.level ? `H${section.level}` : "TXT"}
+                      </span>
+                      <h3 className="text-13 font-medium text-ink">{section.title}</h3>
+                      {section.body && (
+                        <pre className="mt-2 max-h-44 overflow-auto rounded-md border border-line-soft bg-line-soft px-3 py-2.5 text-[11.5px] leading-relaxed whitespace-pre-wrap text-body">
+                          {section.body}
+                        </pre>
+                      )}
+                    </div>
+                  </section>
+                ))
+              )}
+            </div>
+          </>
         )}
       </div>
     </article>

@@ -47,7 +47,7 @@ web/src/      React 19 + Vite 7 + Tailwind 4 UI
   components/  Button, Modal, Confirm, Toast, DataTable, Page, SideNav, Layout, Logo,
                StatusBadge, TabButton, SearchBar (+ Toggle), Sparkline (+ Meter), PortLinks,
                container/ (LogsView, StatsView, TerminalView, InspectView)
-  pages/       Dashboard, Containers, ContainerDetail, Stacks, Compose, Images, Volumes, Agents
+  pages/       Dashboard, Containers, ContainerDetail, Stacks, Compose, Networking, Images, Volumes, Agents
   lib/         api.ts (fetch client, wsUrl), usePolling, useLiveSocket, useAction,
                useContainerActions, format.ts
 server/test, web/test   tests live beside their part

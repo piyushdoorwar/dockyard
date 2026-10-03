@@ -23,6 +23,7 @@ function EngineStatus() {
 }
 
 function sectionTitle(pathname: string): string {
+  if (pathname === "/settings") return "Settings";
   const item = NAV_ITEMS.find((n) => (n.end ? pathname === n.to : pathname === n.to || pathname.startsWith(`${n.to}/`)));
   return item?.label ?? "Not found";
 }
