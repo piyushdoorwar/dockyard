@@ -10,6 +10,7 @@ import { ImagesPage } from "./pages/ImagesPage";
 import { StacksPage } from "./pages/StacksPage";
 import { VolumesPage } from "./pages/VolumesPage";
 import { AgentsPage } from "./pages/AgentsPage";
+import { ComposePage } from "./pages/ComposePage";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -28,6 +29,7 @@ export function App() {
           <Route path="containers" element={<ContainersPage />} />
           <Route path="containers/:id" element={<ContainerDetailPage />} />
           <Route path="stacks" element={<StacksPage />} />
+          <Route path="compose" element={<ComposePage />} />
           <Route path="images" element={<ImagesPage />} />
           <Route path="volumes" element={<VolumesPage />} />
           <Route path="agents" element={<AgentsPage />} />

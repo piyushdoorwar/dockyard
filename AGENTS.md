@@ -47,7 +47,7 @@ web/src/      React 19 + Vite 7 + Tailwind 4 UI
   components/  Button, Modal, Confirm, Toast, DataTable, Page, SideNav, Layout, Logo,
                StatusBadge, TabButton, SearchBar (+ Toggle), Sparkline (+ Meter), PortLinks,
                container/ (LogsView, StatsView, TerminalView, InspectView)
-  pages/       Dashboard, Containers, ContainerDetail, Stacks, Images, Volumes, Agents
+  pages/       Dashboard, Containers, ContainerDetail, Stacks, Compose, Images, Volumes, Agents
   lib/         api.ts (fetch client, wsUrl), usePolling, useLiveSocket, useAction,
                useContainerActions, format.ts
 server/test, web/test   tests live beside their part
@@ -70,6 +70,11 @@ docker-entrypoint.sh    joins the Docker socket's group, then drops to the node 
 - **Agents map** scans `DOCKYARD_WORKSPACE` (default: cwd; `/workspace` in the image)
   for `AGENTS.md`, skipping generated and vendor folders, with depth, directory-count and
   file-size limits and a short result cache.
+- **Compose discovery** scans the same workspace for Compose files. Previews use
+  `docker compose config` against bounded temporary snapshots, never run lifecycle
+  commands, and never return raw environment/secret values. YAML parsing collects
+  local dependencies only; Compose owns merge and interpolation semantics. Container
+  matching requires source-file labels and the actual host workspace path, not names.
 - **Socket access in the image.** The container starts as root only so the entrypoint
   can add `node` to the socket's group; if the socket isn't group-writable it stays root
   and logs why. Running with `--user` skips this.

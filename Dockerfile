@@ -24,7 +24,7 @@ ENV NODE_ENV=production \
     PORT=41739 \
     APP_VERSION=${APP_VERSION} \
     DOCKYARD_WORKSPACE=/workspace
-RUN apk add --no-cache su-exec
+RUN apk add --no-cache su-exec docker-cli-compose
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Boxes, Container, Database, HardDrive, Layers, LayoutDashboard, type LucideIcon, Network } from "lucide-react";
+import { Boxes, Container, Database, Files, HardDrive, Layers, LayoutDashboard, type LucideIcon, Network } from "lucide-react";
 import { NavLink } from "react-router";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -8,6 +8,7 @@ export const NAV_ITEMS: { to: string; label: string; icon: LucideIcon; end?: boo
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/containers", label: "Containers", icon: Container },
   { to: "/stacks", label: "Stacks", icon: Layers },
+  { to: "/compose", label: "Compose", icon: Files },
   { to: "/images", label: "Images", icon: Boxes },
   { to: "/volumes", label: "Volumes", icon: Database },
   { to: "/agents", label: "Agents", icon: Network },

@@ -3,7 +3,8 @@
 Dockyard is a local-first visual runtime for Docker. It gives your local Docker engine a
 browser UI: containers, Compose stacks, images, volumes, live logs, resource metrics, an
 interactive terminal, disk cleanup, and one combined map of every `AGENTS.md` in a
-repository.
+repository. Compose discovery finds applications in that repository before their
+containers exist.
 
 No account, no cloud, no telemetry. It only answers requests from your own machine.
 
@@ -11,7 +12,7 @@ Site: <https://piyushdoorwar.github.io/dockyard/>
 
 ## Run it
 
-You need Docker. Run this from the repository whose `AGENTS.md` files you want mapped
+You need Docker. Run this from the repository whose Compose and `AGENTS.md` files you want discovered
 (it is mounted read-only at `/workspace`):
 
 ```bash
@@ -30,8 +31,39 @@ Then open <http://localhost:41739>.
 - **Docker socket.** The entrypoint joins the socket's group at start-up and then runs
   the server as the unprivileged `node` user, so no `--group-add` is needed. This works
   the same on Linux and Docker Desktop.
-- **No workspace?** Leave out the `/workspace` mount; everything except the Agents page
+- **No workspace?** Leave out the `/workspace` mount; everything except workspace discovery (Compose and Agents)
   works without it.
+
+### Discover Compose projects
+
+Open **Compose** to scan the mounted workspace, including nested repositories. Dockyard
+finds `compose.yaml`, `compose.yml`, `docker-compose.yaml`, `docker-compose.yml`, and
+named variants such as `compose.dev.yaml`. Files are grouped by directory. Standard
+base and override files are selected using Compose's filename precedence; open a
+project to choose a different base file and an optional override.
+
+The preview shows services, images or local builds, published ports, and profiles.
+It uses Docker Compose's configuration resolver, including the project's `.env` file,
+and links containers whose Compose source-file labels match the selected files.
+Project names alone are not used for matching. Containers started with other file
+combinations remain available under **Stacks**.
+
+Choose optional profiles and **Copy command** to get a command to run in the displayed
+host directory. Discovery is read-only: it does not start, build, pull, or change
+containers, and it does not edit workspace files. The configuration preview omits
+environment values, secrets, and raw Compose output.
+
+Previews run against temporary copies of bounded local configuration dependencies,
+without Dockyard's environment or Docker connection. Local `include` and `extends`
+references are supported. Remote, absolute, variable-based, out-of-workspace, or
+symlinked configuration references, and includes with custom `project_directory` or
+`env_file`, are reported as unresolved. Missing required files or variables are also
+reported; host-shell variables are not available to the preview. Fix these on the
+host and rescan, or inspect the configuration with `docker compose config` there.
+
+Scans skip dependency and generated directories and stop at 12 levels, 20,000
+directories, or 50 projects. Individual configuration files are limited to 512 KB;
+previews have dependency, output, and time limits. A partial scan is clearly marked.
 
 ### Update
 
@@ -52,7 +84,10 @@ so stop, restart or remove it from your terminal rather than from the UI.
 
 ## Develop
 
-Requires Node.js 22+ (CI uses 24) and a running Docker engine.
+Requires Node.js 22+ (CI uses 24) and a running Docker engine. Install the Docker
+Compose CLI plugin (`docker compose version`) for configuration previews during local
+development; it is bundled in the runtime image. Without it, files are still
+discovered and the UI explains that previews are unavailable.
 
 ```bash
 npm install

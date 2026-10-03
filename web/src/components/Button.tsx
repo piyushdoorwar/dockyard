@@ -14,9 +14,10 @@ interface ButtonProps {
   type?: "button" | "submit";
   title?: string;
   className?: string;
+  "aria-label"?: string;
 }
 
-export function Button({ children, variant = "primary", size = "md", icon: Icon, onClick, disabled, type = "button", title, className }: ButtonProps) {
+export function Button({ children, variant = "primary", size = "md", icon: Icon, onClick, disabled, type = "button", title, className, "aria-label": ariaLabel }: ButtonProps) {
   return (
     <button
       type={type}
@@ -24,6 +25,7 @@ export function Button({ children, variant = "primary", size = "md", icon: Icon,
       onClick={onClick}
       disabled={disabled}
       title={title}
+      aria-label={ariaLabel}
     >
       {Icon && <Icon size={size === "sm" ? 13 : 14} strokeWidth={2} aria-hidden />}
       {children}

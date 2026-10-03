@@ -155,5 +155,36 @@ export interface AgentsManifest {
   scannedAt: string;
 }
 
+export interface ComposeService {
+  name: string;
+  image: string | null;
+  build: boolean;
+  ports: string[];
+  profiles: string[];
+}
+
+export interface ComposeProject {
+  /** Workspace-relative directory, also the stable discovery key. */
+  directory: string;
+  files: string[];
+  selectedFiles: string[];
+  name: string;
+  configuration: "resolved" | "unresolved";
+  services: ComposeService[];
+  profiles: string[];
+  issues: string[];
+  containers: ContainerSummary[];
+  status: StackStatus | "not-created" | "unknown";
+  /** Directory in which to run the command on the host, if known. */
+  hostDirectory: string | null;
+}
+
+export interface ComposeManifest {
+  root: string;
+  projects: ComposeProject[];
+  warnings: string[];
+  scannedAt: string;
+}
+
 /** Header every state-changing request must carry (see server/src/security.ts). */
 export const CSRF_HEADER = "x-dockyard";
