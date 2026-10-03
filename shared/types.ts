@@ -238,5 +238,24 @@ export interface NetworkingSnapshot {
   scannedAt: string;
 }
 
+export interface ContainerDiagnostics {
+  id: string;
+  status: string;
+  exitCode: number;
+  oomKilled: boolean;
+  restartCount: number;
+  engineError: string | null;
+  startedAt: string | null;
+  finishedAt: string | null;
+  health: {
+    status: string;
+    failingStreak: number;
+    checks: { startedAt: string; finishedAt: string; exitCode: number; output: string }[];
+  } | null;
+  logs: LogLine[];
+  logError: string | null;
+  collectedAt: string;
+}
+
 /** Header every state-changing request must carry (see server/src/security.ts). */
 export const CSRF_HEADER = "x-dockyard";

@@ -4,6 +4,7 @@ import {
   type ComposeManifest,
   type ComposeProject,
   type ContainerSummary,
+  type ContainerDiagnostics,
   CSRF_HEADER,
   type DiskUsage,
   type ImageSummary,
@@ -68,6 +69,7 @@ export const api = {
   cleanUp: () => request<PruneResult>("POST", "/api/system/prune"),
 
   containers: () => request<ContainerSummary[]>("GET", "/api/containers"),
+  containerDiagnostics: (id: string) => request<ContainerDiagnostics>("GET", `/api/containers/${enc(id)}/diagnostics`),
   inspectContainer: (id: string) => request<ContainerInspect>("GET", `/api/containers/${enc(id)}`),
   containerAction: (id: string, action: ContainerAction) =>
     request<{ ok: true }>("POST", `/api/containers/${enc(id)}/${action}`),

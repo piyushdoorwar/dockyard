@@ -6,6 +6,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { toHttpError } from "./errors.js";
 import { agentRoutes } from "./routes/agents.js";
+import { diagnosticsRoutes } from "./routes/diagnostics.js";
 import { containerRoutes } from "./routes/containers.js";
 import { composeRoutes } from "./routes/compose.js";
 import { imageRoutes } from "./routes/images.js";
@@ -43,6 +44,7 @@ export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
 
   systemRoutes(app, opts.docker, opts.appVersion ?? "dev");
   containerRoutes(app, opts.docker);
+  diagnosticsRoutes(app, opts.docker);
   stackRoutes(app, opts.docker);
   imageRoutes(app, opts.docker);
   networkingRoutes(app, opts.docker);

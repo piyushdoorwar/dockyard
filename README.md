@@ -34,6 +34,15 @@ Then open <http://localhost:41739>.
 - **No workspace?** Leave out the `/workspace` mount; everything except workspace discovery (Compose and Agents)
   works without it.
 
+### Diagnose a failing container
+
+Open a container and select **Diagnostics** to see its current exit code, OOM kill
+flag, restart count, engine error, health-check results, and a short recent log
+excerpt together. Containers with an unhealthy health check, a nonzero exit code,
+or a dead or restarting state link directly to this tab from the Containers list.
+The tab refreshes while open and is read-only. These are Docker's observed signals,
+not an automatic root-cause diagnosis; use **Logs** for a longer live stream.
+
 ### Inspect ports and networks
 
 Open **Networking** to find a published port's owning container, bind address,

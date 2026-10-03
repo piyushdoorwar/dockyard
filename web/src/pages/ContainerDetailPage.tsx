@@ -1,8 +1,8 @@
-import { ArrowLeft, Braces, ChartLine, Loader2, Play, RotateCw, ScrollText, Square, SquareTerminal, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { ArrowLeft, Braces, ChartLine, Stethoscope, Loader2, Play, RotateCw, ScrollText, Square, SquareTerminal, Trash2 } from "lucide-react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import type { PortMapping } from "../../../shared/types";
 import { Button } from "../components/Button";
+import { DiagnosticsView } from "../components/container/DiagnosticsView";
 import { InspectView } from "../components/container/InspectView";
 import { LogsView } from "../components/container/LogsView";
 import { StatsView } from "../components/container/StatsView";
@@ -15,9 +15,10 @@ import { api, type ContainerInspect } from "../lib/api";
 import { SELF_REASON, useContainerActions } from "../lib/useContainerActions";
 import { usePolling } from "../lib/usePolling";
 
-type TabId = "logs" | "inspect" | "terminal" | "stats";
+type TabId = "diagnostics" | "logs" | "inspect" | "terminal" | "stats";
 const TABS: Tab<TabId>[] = [
   { id: "logs", label: "Logs", icon: ScrollText },
+  { id: "diagnostics", label: "Diagnostics", icon: Stethoscope },
   { id: "inspect", label: "Inspect", icon: Braces },
   { id: "terminal", label: "Terminal", icon: SquareTerminal },
   { id: "stats", label: "Stats", icon: ChartLine },
@@ -62,7 +63,10 @@ export function ContainerDetailPage() {
   const navigate = useNavigate();
   const { data: info, error, refresh } = usePolling(() => api.inspectContainer(id), 4_000);
   const { busy, act, remove } = useContainerActions(refresh);
-  const [tab, setTab] = useState<TabId>("logs");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const tab: TabId = TABS.some(t => t.id === requestedTab) ? requestedTab as TabId : "logs";
+  const setTab = (next: TabId) => setSearchParams(next === "logs" ? {} : { tab: next });
 
   if (!info) {
     return (
@@ -138,6 +142,7 @@ export function ContainerDetailPage() {
       <TabButton tabs={TABS} active={tab} onChange={setTab} />
       <div className="mt-5">
         {tab === "logs" && <LogsView containerId={info.Id} />}
+        {tab === "diagnostics" && <DiagnosticsView containerId={info.Id} onShowLogs={() => setTab("logs")} />}
         {tab === "inspect" && <InspectView info={info} />}
         {tab === "terminal" &&
           (running ? <TerminalView containerId={info.Id} /> : <Idle>Start the container to open a terminal.</Idle>)}

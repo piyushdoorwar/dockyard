@@ -8,6 +8,7 @@ import { ErrorBanner, NoItemFound, PageHeader } from "../components/Page";
 import { PortLinks } from "../components/PortLinks";
 import { SearchBar, Toggle } from "../components/SearchBar";
 import { ContainerStatus } from "../components/StatusBadge";
+import { exitCode } from "../lib/format";
 import { api } from "../lib/api";
 import { timeAgo } from "../lib/format";
 import { SELF_REASON, useContainerActions } from "../lib/useContainerActions";
@@ -45,6 +46,7 @@ export function ContainerName({ c }: { c: ContainerSummary }) {
         </Link>
         {c.isSelf && <span className="shrink-0 rounded whitespace-nowrap bg-primary-soft px-1.5 py-0.5 text-11 font-medium text-accent">this app</span>}
       </span>
+      {(c.state === "dead" || c.state === "restarting" || /\(unhealthy\)/.test(c.status) || (c.state === "exited" && (exitCode(c.status) ?? 0) !== 0)) && <Link to={`/containers/${c.id}?tab=diagnostics`} className="text-12 text-accent hover:underline">View diagnostics</Link>}
       <span className="text-12 text-muted">
         <span className="font-mono">{c.shortId}</span>
         {c.project && (
