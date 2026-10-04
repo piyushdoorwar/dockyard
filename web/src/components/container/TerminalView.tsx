@@ -15,15 +15,17 @@ export function TerminalView({ containerId }: { containerId: string }) {
   useEffect(() => {
     if (!host.current) return;
     setClosed(false);
+    const styles = getComputedStyle(document.documentElement);
+    const token = (name: string) => styles.getPropertyValue(`--color-terminal${name}`).trim() || undefined;
     const term = new Terminal({
       cursorBlink: true,
       fontSize: 13,
       fontFamily: '"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace',
       theme: {
-        background: getComputedStyle(document.documentElement).getPropertyValue("--color-terminal").trim() || "#0f1a14",
-        foreground: "#d7e3dc",
-        cursor: "#6fd39b",
-        selectionBackground: "rgba(111, 211, 155, 0.25)",
+        background: token(""),
+        foreground: token("-text"),
+        cursor: token("-cursor"),
+        selectionBackground: token("-selection"),
       },
     });
     const fit = new FitAddon();

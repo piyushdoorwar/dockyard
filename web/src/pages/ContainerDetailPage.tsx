@@ -96,6 +96,9 @@ function ContainerDetail({ id }: { id: string }) {
   const self = info.Config.Labels?.["com.dockyard.runtime"] === "true";
   const c = { id: info.Id, name };
   const project = info.Config.Labels?.["com.docker.compose.project"];
+  // Docker ends log, stats and exec streams when a container stops; a new start
+  // time remounts the live views so a restart reconnects them on its own.
+  const session = `${info.Id}:${info.State.StartedAt}`;
 
   return (
     <>
@@ -135,7 +138,7 @@ function ContainerDetail({ id }: { id: string }) {
                 disabled={self || busy !== null}
                 title={self ? SELF_REASON : undefined}
                 onClick={async () => {
-                  if (await remove(c)) navigate("/containers");
+                  if (await remove(c, { leaving: true })) navigate("/containers");
                 }}
               >
                 Delete
@@ -147,12 +150,12 @@ function ContainerDetail({ id }: { id: string }) {
       <ErrorBanner error={error} />
       <TabButton tabs={TABS} active={tab} onChange={setTab} />
       <div className="mt-5">
-        {tab === "logs" && <LogsView containerId={info.Id} />}
+        {tab === "logs" && <LogsView key={session} containerId={info.Id} />}
         {tab === "diagnostics" && <DiagnosticsView containerId={info.Id} onShowLogs={() => setTab("logs")} />}
         {tab === "inspect" && <InspectView info={info} />}
         {tab === "terminal" &&
-          (running ? <Suspense fallback={<Idle>Loading terminal…</Idle>}><TerminalView containerId={info.Id} /></Suspense> : <Idle>Start the container to open a terminal.</Idle>)}
-        {tab === "stats" && (running ? <StatsView containerId={info.Id} /> : <Idle>Start the container to see live stats.</Idle>)}
+          (running ? <Suspense fallback={<Idle>Loading terminal…</Idle>}><TerminalView key={session} containerId={info.Id} /></Suspense> : <Idle>Start the container to open a terminal.</Idle>)}
+        {tab === "stats" && (running ? <StatsView key={session} containerId={info.Id} /> : <Idle>Start the container to see live stats.</Idle>)}
       </div>
     </>
   );

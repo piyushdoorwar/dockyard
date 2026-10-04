@@ -88,6 +88,22 @@ describe("StatsView", () => {
     expect(screen.getByText("200 MB")).toBeInTheDocument();
     expect(screen.getByRole("meter", { name: "Memory used of limit" })).toHaveAttribute("aria-valuenow", "20");
   });
+
+  it("says the last sample is stale once the stream ends, and reconnects", async () => {
+    const user = userEvent.setup();
+    render(<StatsView containerId="abc" />);
+    act(() => {
+      FakeWebSocket.last().emit({
+        type: "stats",
+        sample: { cpuPercent: 5, memUsage: 1e8, memLimit: 1e9, memPercent: 10, netRx: 0, netTx: 0, blockRead: 0, blockWrite: 0, pids: 1, timestamp: "" },
+      });
+      FakeWebSocket.last().emit({ type: "end" });
+    });
+    expect(screen.getByTestId("stats-state")).toHaveTextContent("Stats stream ended");
+    expect(screen.getByText("5.0%")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reconnect" }));
+    expect(FakeWebSocket.instances).toHaveLength(2);
+  });
 });
 
 describe("portsFromInspect", () => {

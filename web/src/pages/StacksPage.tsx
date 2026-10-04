@@ -26,8 +26,10 @@ const PAST: Record<ContainerAction | "remove", string> = {
 
 export function StacksPage() {
   const { data, error, loading, refresh } = usePolling(api.stacks, 3_000);
-  const { busy, run } = useAction(refresh);
-  const containerActions = useContainerActions(refresh);
+  const action = useAction(refresh);
+  const { busy, run } = action;
+  // Share one busy flag so a container can't be acted on while its stack is mid-action.
+  const containerActions = useContainerActions(refresh, action);
   const confirm = useConfirm();
   const toast = useToast();
   const [query, setQuery] = useState("");

@@ -40,6 +40,10 @@
 
 :root {
   color-scheme: light;
+  /* Read by xterm, not by utilities. The terminal is dark in both themes, so these are shared. */
+  --color-terminal-text: #d7e3dc;
+  --color-terminal-cursor: #6fd39b;
+  --color-terminal-selection: rgba(111, 211, 155, 0.25);
 }
 
 :root[data-theme="dark"] {
