@@ -18,7 +18,9 @@ export const NAV_ITEMS: { to: string; label: string; icon: LucideIcon; end?: boo
 export function SideNav() {
   const { settings } = useSettings();
   return (
-    <aside className="flex h-full w-16 shrink-0 flex-col bg-surface shadow-[1px_0_0_var(--color-line)] md:w-60">
+    // Floats off the edge like a hull: rounded, lifted by a soft shadow, with a
+    // slightly heavier bottom edge. Contents are the same as a flat sidebar.
+    <aside className="side-hull my-3 ml-3 flex w-14 shrink-0 flex-col overflow-hidden rounded-2xl border border-line bg-surface md:w-56">
       <div className="flex items-center justify-center gap-2.5 px-3 pt-5 pb-4 md:justify-start md:px-5">
         <Logo size={30} />
         <span className="hidden text-[19px] font-bold tracking-tight text-ink md:inline">Dockyard</span>

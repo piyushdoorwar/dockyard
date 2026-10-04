@@ -44,6 +44,7 @@
   --color-terminal-text: #d7e3dc;
   --color-terminal-cursor: #6fd39b;
   --color-terminal-selection: rgba(111, 211, 155, 0.25);
+  --shadow-hull: 0 1px 2px rgba(15, 26, 20, 0.06), 0 10px 28px -6px rgba(15, 26, 20, 0.14), inset 0 -3px 0 var(--color-line-soft);
 }
 
 :root[data-theme="dark"] {
@@ -75,6 +76,11 @@
   --color-agent-line: #3f6b51;
   --color-scroll-thumb: rgba(76, 201, 131, 0.4);
   --color-scroll-thumb-hover: rgba(76, 201, 131, 0.65);
+  --shadow-hull: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -6px rgba(0, 0, 0, 0.55), inset 0 -3px 0 var(--color-line-soft);
+}
+
+.side-hull {
+  box-shadow: var(--shadow-hull);
 }
 
 html,
