@@ -39,8 +39,7 @@
       .then((stats) => {
         const n = stats && stats.downloads;
         if (!Number.isSafeInteger(n) || n <= 0) return;
-        document.getElementById("downloadCount").textContent = compactCount(n);
-        downloads.title = `${n.toLocaleString("en")} downloads of ghcr.io/piyushdoorwar/dockyard`;
+        downloads.textContent = `${compactCount(n)} ${n === 1 ? "download" : "downloads"}`;
         downloads.hidden = false;
       })
       .catch(() => {});
