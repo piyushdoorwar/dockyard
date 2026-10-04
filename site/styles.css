@@ -174,6 +174,12 @@ img { max-width: 100%; display: block; }
 .hero h1 em { font-style: normal; color: var(--green); }
 .hero .lede { margin-top: 20px; font-size: clamp(17px, 1.6vw, 19px); color: var(--text); max-width: 540px; }
 .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.downloads { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; }
+.downloads b { color: var(--text); font-weight: 700; }
+.downloads .ic { width: 16px; height: 16px; color: var(--green); stroke-width: 2.4; }
+.downloads:hover span { text-decoration: underline; }
+.downloads[hidden] { display: none; }
+.downloads + .checks { margin-top: 14px; }
 .checks { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 28px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; font-weight: 500; }
 .checks li { display: inline-flex; align-items: center; gap: 6px; }
 .checks .ic { width: 16px; height: 16px; color: var(--green); stroke-width: 2.4; }

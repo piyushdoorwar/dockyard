@@ -23,6 +23,29 @@
     });
   }
 
+  // ---- Image downloads ---------------------------------------------------
+  // CI writes stats.json from the GHCR package page. Rounded down, so the
+  // site never claims more than the real count (1,299 shows as 1.2k).
+  function compactCount(n) {
+    const floor1 = (value) => (Math.floor(value * 10) / 10).toString();
+    if (n >= 1e6) return `${floor1(n / 1e6)}M`;
+    if (n >= 1e3) return `${floor1(n / 1e3)}k`;
+    return String(n);
+  }
+  const downloads = document.getElementById("downloads");
+  if (downloads) {
+    fetch("stats.json", { cache: "no-cache" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((stats) => {
+        const n = stats && stats.downloads;
+        if (!Number.isSafeInteger(n) || n <= 0) return;
+        document.getElementById("downloadCount").textContent = compactCount(n);
+        downloads.title = `${n.toLocaleString("en")} downloads of ghcr.io/piyushdoorwar/dockyard`;
+        downloads.hidden = false;
+      })
+      .catch(() => {});
+  }
+
   // ---- Copy buttons -----------------------------------------------------
   // Delegated, so blocks rendered later (the releases list) work too.
   async function copyText(text) {
