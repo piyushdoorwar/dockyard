@@ -1,6 +1,5 @@
 import { PageHeader } from "../components/Page";
 import { Toggle } from "../components/SearchBar";
-import { ThemeToggle } from "../components/ThemeToggle";
 import { useSettings } from "../lib/settings";
 
 export function SettingsPage() {
@@ -9,13 +8,6 @@ export function SettingsPage() {
     <>
       <PageHeader title="Settings" subtitle="Preferences are saved in this browser." />
       <div className="grid max-w-3xl gap-5">
-        <section className="rounded-lg border border-line bg-surface p-5">
-          <h2 className="text-sm font-medium text-ink">Appearance</h2>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-            <p className="text-13 text-grey">Choose light or dark mode.</p>
-            <ThemeToggle />
-          </div>
-        </section>
         <section className="rounded-lg border border-line bg-surface p-5">
           <h2 className="text-sm font-medium text-ink">Workspace discovery</h2>
           <p className="mt-2 text-13 text-grey">Enable the pages you need. Discovery is off by default.</p>

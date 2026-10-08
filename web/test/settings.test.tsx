@@ -23,7 +23,7 @@ describe("discovery preferences", () => {
     expect(nav.queryByRole("link", { name: "Compose" })).not.toBeInTheDocument();
     expect(nav.getByRole("link", { name: "Stacks" })).toBeInTheDocument();
     expect(calls.some((call) => /\/api\/(agents|compose)/.test(call.url))).toBe(false);
-    expect(screen.getByRole("button", { name: /Switch to .* mode/ })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Appearance" })).not.toBeInTheDocument();
   });
 
   it("saves independent preferences and restores them after remounting", async () => {

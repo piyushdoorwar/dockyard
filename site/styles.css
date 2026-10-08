@@ -1,6 +1,7 @@
 /*
  * Dockyard product site.
- * Light theme on white surfaces with a dark-green accent. Plain CSS, no build step.
+ * Light and dark themes follow the operating system setting, with a green accent.
+ * Plain CSS, no build step.
  */
 
 :root {
@@ -8,6 +9,9 @@
   --green-hover: #0b6537;
   --green-soft: rgba(14, 122, 67, 0.1);
   --green-softer: rgba(14, 122, 67, 0.05);
+  /* Solid green behind white text; stays dark green in both themes. */
+  --green-fill: #0e7a43;
+  --green-fill-hover: #0b6537;
   --ink: #0f1a14;
   --text: #24302a;
   --muted: #6b7a71;
@@ -17,6 +21,10 @@
   --surface: #ffffff;
   --surface-2: #f5f8f6;
   --code-bg: #f6f8f7;
+  --topbar-bg: rgba(252, 252, 252, 0.86);
+  --mock-side: #fafcfb;
+  --mock-dot: #d5ddd8;
+  --badge-pre: #8a5a00;
 
   /* Container states used in the product mocks */
   --st-run: #0e7a43;
@@ -34,6 +42,40 @@
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --wrap: 1260px;
   --gutter: clamp(16px, 4vw, 40px);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Neutral charcoal surfaces, matching the runtime's dark theme. */
+    color-scheme: dark;
+    --green: #4cc983;
+    --green-hover: #6fd39b;
+    --green-soft: rgba(76, 201, 131, 0.14);
+    --green-softer: rgba(76, 201, 131, 0.07);
+    --ink: #f3f4f5;
+    --text: #d9dbde;
+    --muted: #9095a0;
+    --border: #3a3c41;
+    --border-strong: #55585f;
+    --bg: #161719;
+    --surface: #1e1f22;
+    --surface-2: #25262a;
+    --code-bg: #1a1b1e;
+    --topbar-bg: rgba(22, 23, 25, 0.86);
+    --mock-side: #1a1b1e;
+    --mock-dot: #3a3c41;
+    --badge-pre: #f2c46d;
+
+    --st-run: #4cc983;
+    --st-pause: #f2c46d;
+    --st-stop: #9095a0;
+    --st-err: #ff8fa3;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 48px -20px rgba(0, 0, 0, 0.7);
+  }
 }
 
 *,
@@ -85,14 +127,14 @@ img { max-width: 100%; display: block; }
 .skip-link {
   position: absolute; left: 12px; top: -48px; z-index: 100;
   padding: 8px 12px; border-radius: var(--radius);
-  background: var(--green); color: #fff;
+  background: var(--green-fill); color: #fff;
 }
 .skip-link:focus { top: 12px; color: #fff; }
 
 /* ---- Top bar ---------------------------------------------------------- */
 .topbar {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(252, 252, 252, 0.86);
+  background: var(--topbar-bg);
   backdrop-filter: saturate(1.4) blur(12px);
   -webkit-backdrop-filter: saturate(1.4) blur(12px);
   border-bottom: 1px solid var(--border);
@@ -131,8 +173,8 @@ img { max-width: 100%; display: block; }
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--green); color: #fff; box-shadow: 0 1px 2px rgba(14, 122, 67, 0.25); }
-.btn-primary:hover { background: var(--green-hover); color: #fff; }
+.btn-primary { background: var(--green-fill); color: #fff; box-shadow: 0 1px 2px rgba(14, 122, 67, 0.25); }
+.btn-primary:hover { background: var(--green-fill-hover); color: #fff; }
 .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--border); box-shadow: var(--shadow-sm); }
 .btn-secondary:hover { border-color: var(--border-strong); color: var(--ink); background: var(--surface-2); }
 .btn .ic { width: 17px; height: 17px; }
@@ -195,7 +237,7 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid var(--border); background: var(--surface-2);
 }
 .mock-dots { display: flex; gap: 6px; }
-.mock-dots i { width: 10px; height: 10px; border-radius: 50%; background: #d5ddd8; }
+.mock-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--mock-dot); }
 .mock-address {
   flex: 1; max-width: 300px; margin: 0 auto;
   display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -206,7 +248,7 @@ img { max-width: 100%; display: block; }
 .mock-body { display: grid; grid-template-columns: 160px minmax(0, 1fr); min-height: 420px; }
 
 /* Sidebar navigation */
-.mock-side { display: flex; flex-direction: column; border-right: 1px solid var(--border); background: #fafcfb; padding: 12px 8px; min-width: 0; }
+.mock-side { display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--mock-side); padding: 12px 8px; min-width: 0; }
 .mock-brand { display: flex; align-items: center; gap: 8px; padding: 2px 8px 12px; font-weight: 700; color: var(--ink); font-size: 13px; }
 .mock-brand img { width: 20px; height: 20px; }
 .mock-label { padding: 10px 8px 6px; color: var(--muted); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
@@ -494,7 +536,7 @@ img { max-width: 100%; display: block; }
 .toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .toggle .track { position: relative; width: 36px; height: 20px; border-radius: 999px; background: var(--border-strong); transition: background-color 0.15s ease; }
 .toggle .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); transition: transform 0.15s ease; }
-.toggle input:checked + .track { background: var(--green); }
+.toggle input:checked + .track { background: var(--green-fill); }
 .toggle input:checked + .track::after { transform: translateX(16px); }
 .toggle input:focus-visible + .track { outline: 2px solid var(--green); outline-offset: 2px; }
 
@@ -504,8 +546,8 @@ img { max-width: 100%; display: block; }
 .release-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
 .release-head h3 { font-size: 20px; font-family: var(--mono); letter-spacing: -0.01em; }
 .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-.badge-latest { background: var(--green); color: #fff; }
-.badge-pre { background: rgba(214, 150, 20, 0.14); color: #8a5a00; }
+.badge-latest { background: var(--green-fill); color: #fff; }
+.badge-pre { background: rgba(214, 150, 20, 0.14); color: var(--badge-pre); }
 .release-date { margin-left: auto; color: var(--muted); font-size: 14px; }
 .release-name { margin-top: 4px; color: var(--muted); }
 .release .cmd { margin-top: 14px; }

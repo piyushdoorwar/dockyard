@@ -8,7 +8,9 @@ Dockyard is a local-first visual runtime for Docker: a small Node server (Fastif
 dockerode) that talks to the local Docker engine through its socket, plus a React UI
 served from the same origin. Users run the public image `ghcr.io/piyushdoorwar/dockyard`
 with the Docker socket mounted and the current repository mounted read-only at
-`/workspace`, then open <http://localhost:41739>.
+`/workspace`, then open <http://localhost:41739>. The UI is an installable PWA
+(`web/public/manifest.webmanifest`, `sw.js`); the service worker only serves an offline
+page and caches nothing else, since Docker state is always live.
 
 ## Hard rules
 
@@ -19,7 +21,8 @@ with the Docker socket mounted and the current repository mounted read-only at
   lines. Work directly on `main` (trunk-based); don't create feature branches.
 - **Personal project.** Never mention work organisations or other projects in code,
   comments, fixtures, docs or commit messages.
-- **Runtime defaults to light, with an optional persisted dark theme; the site stays light.** Colors are tokens in
+- **Light and dark follow the OS (`prefers-color-scheme`) in both the runtime and the site;
+  there is no theme switch.** Colors are tokens in
   [web/src/styles.css](web/src/styles.css) (`--color-primary: #0e7a43`). Green buttons
   carry white text. Don't hard-code other accent colors.
 

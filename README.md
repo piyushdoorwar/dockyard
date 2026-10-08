@@ -34,6 +34,11 @@ Then open <http://localhost:41739>.
 - **No workspace?** Leave out the `/workspace` mount; everything except workspace discovery (Compose and Agents)
   works without it.
 
+**Install as an app.** With the container running, open <http://localhost:41739> and use
+your browser's **Install app** option. The installed app uses the Dockyard logo and opens
+in its own window; keep the container running to use it. Light and dark mode follow your
+operating system setting.
+
 ### Diagnose a failing container
 
 Open a container and select **Diagnostics** to see its current exit code, OOM kill
