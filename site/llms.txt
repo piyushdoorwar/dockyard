@@ -1,0 +1,56 @@
+# Dockyard
+
+> Dockyard is a free, open-source, local-first visual runtime for Docker. It gives your local Docker engine a browser UI from a single container: containers, Compose stacks, images, volumes, networks, live logs, resource metrics, an interactive terminal, disk cleanup, and one combined map of every `AGENTS.md` in a repository. There is no account, no cloud and no telemetry, and it only answers requests from your own machine.
+
+## Quick start
+
+Run this from the repository whose Compose and `AGENTS.md` files you want discovered, then open http://localhost:41739:
+
+```bash
+docker run -d --name dockyard --restart unless-stopped \
+  -p 127.0.0.1:41739:41739 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$PWD:/workspace:ro" \
+  ghcr.io/piyushdoorwar/dockyard:latest
+```
+
+- The Docker socket gives Dockyard access to your local engine. Socket access is root-equivalent, so keep the `127.0.0.1:` prefix; the server has no login and must never be reachable from your network.
+- The current folder is mounted read-only at `/workspace` for Compose discovery and the agent map. Leave it out and everything else still works.
+- To use another host port, change only the left side: `-p 127.0.0.1:8080:41739`.
+- To update, run `docker pull ghcr.io/piyushdoorwar/dockyard:latest`, `docker rm -f dockyard`, then the same `docker run` command. Dockyard keeps no state of its own.
+- With the container running, the browser's Install app option installs Dockyard as an app in its own window.
+
+## Features
+
+- Engine dashboard: Docker version, CPUs, memory and container counts, with disk use split across images, containers, volumes and build cache.
+- Containers: start, stop, restart and remove; filter by name, image or stack; published ports open as links.
+- Live logs streamed over WebSockets, with stderr marked apart from stdout and a timestamp on every line.
+- Live stats: CPU, memory, network and disk I/O sparklines plus process count.
+- Interactive terminal: a real TTY into any running container that resizes with the window.
+- Inspect: the complete inspect document for a container.
+- Diagnostics: exit code, OOM kill flag, restart count, engine error, health-check results and a recent log excerpt in one read-only tab. These are Docker's observed signals, not an automatic root-cause diagnosis.
+- Networking: find which container owns a published port, its bind address, protocol and Compose stack; list networks with drivers, subnets, addresses and DNS aliases; check whether two containers share a network.
+- Compose stacks: containers grouped by Compose project; start, stop, restart or remove a whole stack.
+- Compose discovery (opt-in in Settings): finds `compose.yaml`, `docker-compose.yml` and named variants in the workspace before their containers exist, and previews services, images, ports and profiles using `docker compose config`. It never runs lifecycle commands, never edits files and never shows environment or secret values.
+- Agent map (opt-in in Settings): finds every `AGENTS.md` in the mounted repository and shows them as one searchable outline of headings, skipping `.git`, `node_modules` and build output.
+- Images and volumes: size, usage and owning stack; remove one or prune unused ones.
+- Engine cleanup: reclaim stopped containers, dangling images, unused networks and build cache in one reviewed action.
+- Self-protection: Dockyard recognises its own container by the `com.dockyard.runtime=true` label and refuses to stop, restart or remove it.
+- Light and dark mode follow the operating system setting.
+
+## Security model
+
+The server has no login and privileged access to the Docker socket, so it only answers its owner's browser: the `Host` header must be a loopback name, `Origin` must match `Host`, state-changing requests need the `x-dockyard: 1` header, and the documented command publishes the port on `127.0.0.1` only.
+
+## Docs
+
+- [Home](https://dockyard.piyushdoorwar.com/): overview, getting started and features
+- [README](https://github.com/piyushdoorwar/dockyard/blob/main/README.md): full usage, Compose discovery limits and development setup
+- [Source code](https://github.com/piyushdoorwar/dockyard): MIT-licensed repository
+- [Issues](https://github.com/piyushdoorwar/dockyard/issues): bug reports and feature requests
+
+## Optional
+
+- [Releases](https://dockyard.piyushdoorwar.com/releases/): container image tags and changelog
+- [Privacy policy](https://dockyard.piyushdoorwar.com/policy/): what the app and website do with data
+- [Container image](https://github.com/piyushdoorwar/dockyard/pkgs/container/dockyard)
