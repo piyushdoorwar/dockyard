@@ -15,6 +15,7 @@ FROM node:24-alpine
 ARG APP_VERSION=dev
 # The runtime label lets Dockyard recognise and protect its own container.
 LABEL com.dockyard.runtime="true" \
+      org.opencontainers.image.url="https://dockyard.piyushdoorwar.com/" \
       org.opencontainers.image.source="https://github.com/piyushdoorwar/dockyard" \
       org.opencontainers.image.title="Dockyard" \
       org.opencontainers.image.description="Local-first visual runtime for Docker, in your browser" \

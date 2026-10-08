@@ -8,7 +8,7 @@ containers exist.
 
 No account, no cloud, no telemetry. It only answers requests from your own machine.
 
-Site: <https://piyushdoorwar.github.io/dockyard/>
+Site: <https://dockyard.piyushdoorwar.com/>
 
 ## Run it
 
@@ -104,7 +104,7 @@ docker rm -f dockyard
 Then run the same `docker run` command as above. To stay on a specific release, use a
 version tag such as `ghcr.io/piyushdoorwar/dockyard:1.2.3` (or `:1.2`) instead of
 `:latest`. All versions are listed on the
-[releases page](https://piyushdoorwar.github.io/dockyard/releases/).
+[releases page](https://dockyard.piyushdoorwar.com/releases/).
 
 Dockyard protects its own container (it carries the `com.dockyard.runtime=true` label),
 so stop, restart or remove it from your terminal rather than from the UI.

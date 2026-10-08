@@ -2,6 +2,7 @@
   "name": "dockyard",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dockyard.piyushdoorwar.com/",
   "description": "A local-first visual runtime for Docker containers and repository agent instructions.",
   "type": "module",
   "engines": {
